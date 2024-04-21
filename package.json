@@ -1,9 +1,47 @@
 {
-  "name": "tesla-playback-package",
-  "private": "true",
+  "name": "tesla-playback",
   "version": "1.0.0",
-  "main": "index.js",
-  "repository": "git@github.com:EnixCoda/TeslaPlayback.git",
-  "author": "EnixCoda <enixcoda@gmail.com>",
-  "license": "MIT"
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
+    "format": "prettier --write .",
+    "preview": "cp serve.json dist/serve.json && npx serve dist",
+    "prepare": "husky"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18",
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "@types/ua-parser-js": "^0.7.39",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "husky": "^9.0.11",
+    "prettier": "^2.7.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.6"
+  },
+  "prettier": {
+    "printWidth": 150
+  },
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
+  "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.10",
+    "@ffmpeg/util": "^0.12.1",
+    "@primer/react": "^36.12.0",
+    "classnames": "^2.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-iifc": "^1.2.0",
+    "styled-components": "^5.3.5",
+    "ua-parser-js": "^1.0.37"
+  }
 }
