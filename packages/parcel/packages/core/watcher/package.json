@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@parcel/utils": "^1.11.0",
-    "chokidar": "^2.1.5"
+    "chokidar": "^4.0.0"
   },
   "devDependencies": {
     "@parcel/babel-register": "^1.11.1",
