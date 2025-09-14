@@ -3,7 +3,7 @@ import React, { useEffect, useImperativeHandle } from "react";
 
 type Props = {
   file?: File;
-  label?: React.ReactNode;
+  label?: string;
   play?: boolean;
   progress?: number;
   playbackRate?: number;
@@ -89,7 +89,14 @@ export const Video = React.forwardRef<Ref, Props>(function Video({ file, label, 
       )}
       <Box display="flex" sx={{ backgroundColor: error ? "neutral.emphasis" : undefined }}>
         {/* The display="flex" removes the blank area below video */}
-        <video ref={videoRef} playsInline onContextMenu={(e) => e.preventDefault()} {...native} style={{ width: "100%", ...native?.style }} />
+        <video
+          aria-label={label}
+          ref={videoRef}
+          playsInline
+          onContextMenu={(e) => e.preventDefault()}
+          {...native}
+          style={{ width: "100%", ...native?.style }}
+        />
       </Box>
       <Box display="flex" justifyContent="center">
         <Text as="label" sx={{ color: "fg.neutral" }}>

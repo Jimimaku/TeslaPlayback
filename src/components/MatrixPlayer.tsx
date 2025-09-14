@@ -1,7 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon, ColumnsIcon, PlayIcon, StopwatchIcon, VersionsIcon } from "@primer/octicons-react";
 import { Box, Checkbox, FormControl, IconButton, Text } from "@primer/react";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Directions, VideoClipGroup } from "../common";
 import { LayoutKey, layoutKeys, useVideosLayout } from "../hooks/useVideosLayout";
 import { formatDateTime, formatHMS, shiftTime } from "../utils/general";
@@ -221,16 +220,16 @@ export function MatrixPlayer({
             }
           >
             <div>
-              <Video ref={controls.front.ref} file={videos.front} {...getVideoProps(controls.front)} />
+              <Video label={"camera-view-front"} ref={controls.front.ref} file={videos.front} {...getVideoProps(controls.front)} />
             </div>
             <div>
-              <Video ref={controls.rear.ref} file={videos.rear} {...getVideoProps(controls.rear)} />
+              <Video label={"camera-view-rear"} ref={controls.rear.ref} file={videos.rear} {...getVideoProps(controls.rear)} />
             </div>
             <div>
-              <Video ref={controls.left.ref} file={videos.left} {...getVideoProps(controls.left)} />
+              <Video label={"camera-view-left"} ref={controls.left.ref} file={videos.left} {...getVideoProps(controls.left)} />
             </div>
             <div>
-              <Video ref={controls.right.ref} file={videos.right} {...getVideoProps(controls.right)} />
+              <Video label={"camera-view-right"} ref={controls.right.ref} file={videos.right} {...getVideoProps(controls.right)} />
             </div>
           </LayoutComposer>
         </Box>
