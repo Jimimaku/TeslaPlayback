@@ -8,6 +8,7 @@ import { Progress } from "../../utils/exportVideo";
 import { loadFFMpeg } from "../../utils/exportVideo/ffmpeg.entry";
 import { processVideo } from "../../utils/exportVideo/ffmpeg/FFMpegVideoProcessJob";
 import { DrawTextStyle } from "../../utils/exportVideo/ffmpeg/ffmpegArgsComposer/DrawTextArgs";
+import { convert } from "../../utils/exportVideo/mediabunny";
 import { entries, getBlob } from "../../utils/general";
 import { ExpandButton } from "../base/ExpandButton";
 import { Select } from "../base/Select";
@@ -31,6 +32,7 @@ export function ExportIdle({
   videos: VideoClipGroup;
   totalTime?: number;
 }) {
+  const [converter, setConverter] = useState<"ffmpeg" | "mediabunny">("mediabunny");
   const [view, setView] = useState<CameraOption>("front");
   const fileMap = useMemo(() => {
     const { front, rear, left, right } = videos;
@@ -80,7 +82,7 @@ export function ExportIdle({
     try {
       if (!fileMap) return;
 
-      setExportState({ state: "loadingConvertor" });
+      setExportState({ state: "loadingConverter" });
       let failed = false;
       const ffmpeg = await loadFFMpeg();
       ffmpeg.on("log", ({ message }) => {
@@ -156,8 +158,49 @@ export function ExportIdle({
     }
   };
 
+  const convertWithMediaBunny = async () => {
+    try {
+      if (!fileMap) return;
+
+      setExportState({ state: "loadingConverter" });
+
+      const progressHub = new EventHub<Progress>();
+      const composition = await convert({
+        sourcesMeta: [fileMap.front, fileMap.rear, fileMap.left, fileMap.right],
+        onProgress: progressHub.dispatch,
+      });
+
+      setExportState({
+        state: "processing",
+        totalTime: trimEndField.value - trimStartField.value || undefined,
+        cancel: composition.cancel,
+        onProgress: progressHub.addListener,
+      });
+      const output = await composition.result;
+      setExportState({ state: "done", output: getBlob(output.buffer, output.mime) });
+    } catch (err) {
+      console.error(err);
+      setExportState({ state: "fail", reason: `Failed processing video: ${err}` });
+    }
+  };
+
+  const startConvert = () =>
+    ({
+      ["ffmpeg"]: convertWithFFMpeg,
+      ["mediabunny"]: convertWithMediaBunny,
+    }[converter]());
+
   return (
     <Box display="flex" flexDirection="column" sx={{ gap: 2 }}>
+      <FormControl>
+        <FormControl.Label>Converter</FormControl.Label>
+        <Select<typeof converter>
+          sx={{ width: "100%" }}
+          value={converter}
+          onChange={(option) => setConverter(option)}
+          options={["ffmpeg", "mediabunny"]}
+        />
+      </FormControl>
       <Text>Please use Firefox, otherwise export might fail.</Text>
       <FormControl>
         <FormControl.Label>Cameras</FormControl.Label>
@@ -251,7 +294,7 @@ export function ExportIdle({
         </FormControl>
       </Box>
       <Box as="hr" width="100%" borderTop="none" />
-      <Button variant="primary" disabled={!allFieldsValid} onClick={() => startConvert()}>
+      <Button variant="primary" disabled={!allFieldsValid} onClick={startConvert}>
         Start
       </Button>
       <Text as="label" color="neutral.emphasis" fontSize={1}>

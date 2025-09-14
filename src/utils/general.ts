@@ -25,7 +25,7 @@ export const downloadURL = (data: string, fileName: string) => {
   a.remove();
 };
 
-export const getBlob = (data: Uint8Array, mimeType: string): Blob =>
+export const getBlob = (data: Uint8Array | ArrayBuffer, mimeType: string): Blob =>
   new Blob([data], {
     type: mimeType,
   });
@@ -88,3 +88,10 @@ export const entries = <K extends string | number | symbol, V>(obj: Record<K, V>
 export const fromEntries = <K extends string | number | symbol, V>(entries: [K, V][]) => Object.fromEntries(entries) as Record<K, V>;
 
 export const isNotFalsy = <T>(item: T | false | 0 | null | undefined | ""): item is T => !!item;
+
+export const mapAndFind = <T, R>(arr: T[], fn: (item: T, index: number, array: T[]) => R | undefined): R | undefined => {
+  for (let i = 0; i < arr.length; i++) {
+    const res = fn(arr[i], i, arr);
+    if (res != null) return res;
+  }
+};

@@ -11,8 +11,8 @@ import { ExportProcessing } from "./ExportProcessing";
 export type ExportStateIdle = {
   state: "idle";
 };
-export type ExportStateLoadingConvertor = {
-  state: "loadingConvertor";
+export type ExportStateLoadingConverter = {
+  state: "loadingConverter";
 };
 export type ExportStateProcessing = {
   state: "processing";
@@ -29,7 +29,7 @@ export type ExportStateFail = {
   reason: string;
 };
 
-export type ExportState = ExportStateIdle | ExportStateLoadingConvertor | ExportStateProcessing | ExportStateDone | ExportStateFail;
+export type ExportState = ExportStateIdle | ExportStateLoadingConverter | ExportStateProcessing | ExportStateDone | ExportStateFail;
 
 export const VideoExporter = memo(function VideoExporter({
   eventName,
@@ -75,7 +75,7 @@ export const VideoExporter = memo(function VideoExporter({
       </Box>
       {run(() => {
         switch (exportState.state) {
-          case "loadingConvertor":
+          case "loadingConverter":
             return <Text>Loading plugins for exporting video...</Text>;
           case "processing":
             return <ExportProcessing exportState={exportState} setExportState={setExportState} />;
