@@ -4,7 +4,7 @@ import { filenames } from "./filenames";
 import { loadFontFile } from "./loadFontFile";
 import { Sizes, spellBook } from "./spellBook";
 
-export const addTimestampToVideo: FFMpegProcessWork<[sizes: Sizes, baseTime: Date, textOptions: DrawTextStyle]> = async (
+export const addTimestampToVideo: FFMpegProcessWork<[sizes: Sizes, baseTime: Date, textOptions?: DrawTextStyle]> = async (
   ffmpeg,
   composer,
   sizes,

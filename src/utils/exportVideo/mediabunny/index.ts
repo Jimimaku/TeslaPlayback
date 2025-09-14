@@ -12,7 +12,8 @@ import {
   VideoSampleSink,
   getFirstEncodableVideoCodec,
 } from "mediabunny";
-import { isNotFalsy } from "../../general";
+import { Convert, Progress } from "..";
+import { getBlob, isNotFalsy } from "../../general";
 
 type LoadedTrack = {
   input: Input;
@@ -63,23 +64,15 @@ function fitContain(sw: number, sh: number, dw: number, dh: number) {
   return { x, y, w, h };
 }
 
-type Result = {
-  mime: string;
-  buffer: ArrayBuffer;
-};
-
-export async function convert({
+async function mediaBunnyConvert({
   sourcesMeta,
   fps = 30,
   onProgress,
 }: {
   sourcesMeta: (SourceMeta | undefined)[];
   fps?: number; // e.g. 30
-  onProgress?: (progress: { progress: number; time: number }) => void;
-}): Promise<{
-  result: Promise<Result>;
-  cancel: () => void;
-}> {
+  onProgress?: (progress: Progress) => void;
+}) {
   let canceled = false;
   const cancel = () => {
     canceled = true;
@@ -172,8 +165,15 @@ export async function convert({
     const mime = await output.getMimeType();
     const buffer = target.buffer;
     if (!buffer) throw new Error("No output buffer");
-    return { mime, buffer };
+    return getBlob(buffer, mime);
   };
 
   return { result: getResult(), cancel };
 }
+
+export const convert: Convert = (inputs, options, { onProgress }) =>
+  mediaBunnyConvert({
+    sourcesMeta: [inputs.front, inputs.rear, inputs.left, inputs.right],
+    fps: 30,
+    onProgress,
+  });

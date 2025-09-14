@@ -68,7 +68,7 @@ const padVideo = (composer: FFmpegArgsComposer, sizes: Sizes) => {
   chain.append(new ComplexFilterChainStep(`overlay=${paddingX}:${paddingY}`).addInputTag(chain.lastTag).addInputTag(lastTag));
 };
 
-const addText = (composer: FFmpegArgsComposer, sizes: Sizes, text: string, textOptions: DrawTextStyle) => {
+const addText = (composer: FFmpegArgsComposer, sizes: Sizes, text: string, textOptions?: DrawTextStyle) => {
   padVideo(composer, sizes);
 
   const chain = composer.filterChain;
@@ -78,12 +78,12 @@ const addText = (composer: FFmpegArgsComposer, sizes: Sizes, text: string, textO
       new DrawTextArgs(text, {
         ...textOptions,
         fontFile: filenames.font,
-      }).setAlignment({ width: sizes.width, height: textOptions.fontSize }, "center", "center")
+      }).setAlignment({ width: sizes.width, height: textOptions?.fontSize ?? 24 }, "center", "center")
     ).addInputTag(lastTag)
   );
 };
 
-const addTimestamp = (composer: FFmpegArgsComposer, sizes: Sizes, baseTime: Date, textOptions: DrawTextStyle) => {
+const addTimestamp = (composer: FFmpegArgsComposer, sizes: Sizes, baseTime: Date, textOptions?: DrawTextStyle) => {
   padVideo(composer, sizes);
 
   const chain = composer.filterChain;
@@ -95,7 +95,7 @@ const addTimestamp = (composer: FFmpegArgsComposer, sizes: Sizes, baseTime: Date
         fontFile: filenames.font,
       })
         .setAsTimeStamp(baseTime)
-        .setAlignment({ width: sizes.width, height: textOptions.fontSize }, "center", "center")
+        .setAlignment({ width: sizes.width, height: textOptions?.fontSize ?? 24 }, "center", "center")
     ).addInputTag(lastTag)
   );
 };

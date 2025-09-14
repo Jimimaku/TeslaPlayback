@@ -1,6 +1,7 @@
 import { Box, Button, Text } from "@primer/react";
 import { memo, useState } from "react";
 import { VideoClipGroup } from "../../common";
+import { Progress } from "../../utils/exportVideo";
 import { run } from "../../utils/general";
 import { Dialog } from "../base/Dialog";
 import { ExportDone } from "./ExportDone";
@@ -17,7 +18,7 @@ export type ExportStateLoadingConverter = {
 export type ExportStateProcessing = {
   state: "processing";
   totalTime?: number;
-  onProgress: (listener: (progress: { progress: number; time: number }) => void) => void;
+  onProgress: (listener: (progress: Progress) => void) => void;
   cancel: () => void;
 };
 export type ExportStateDone = {

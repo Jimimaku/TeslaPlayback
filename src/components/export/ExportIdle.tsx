@@ -4,12 +4,9 @@ import { ExportState } from ".";
 import { TeslaFS } from "../../TeslaFS";
 import { Directions, VideoClipGroup } from "../../common";
 import { EventHub } from "../../utils/EventHub";
-import { Progress } from "../../utils/exportVideo";
-import { loadFFMpeg } from "../../utils/exportVideo/ffmpeg.entry";
-import { processVideo } from "../../utils/exportVideo/ffmpeg/FFMpegVideoProcessJob";
+import { Convert, loadConverter, Progress } from "../../utils/exportVideo";
 import { DrawTextStyle } from "../../utils/exportVideo/ffmpeg/ffmpegArgsComposer/DrawTextArgs";
-import { convert } from "../../utils/exportVideo/mediabunny";
-import { entries, getBlob } from "../../utils/general";
+import { entries } from "../../utils/general";
 import { ExpandButton } from "../base/ExpandButton";
 import { Select } from "../base/Select";
 import { useNumberField } from "./useNumberField";
@@ -78,117 +75,40 @@ export function ExportIdle({
   const allFieldsValid =
     !!fileMap && trimStartField.validation === null && trimEndField.validation === null && (!shouldDrawText || fontSizeField.validation === null);
 
-  const convertWithFFMpeg = async () => {
+  const autoConvert = async (convert: Convert) => {
     try {
-      if (!fileMap) return;
-
-      setExportState({ state: "loadingConverter" });
-      let failed = false;
-      const ffmpeg = await loadFFMpeg();
-      ffmpeg.on("log", ({ message }) => {
-        console.log("[ffmpeg]", message);
-        switch (message) {
-          case "Aborted(OOM)": {
-            failed = true;
-            setExportState({ state: "fail", reason: "ffmpeg ran out of memory." });
-            break;
-          }
-        }
-      });
-      setExportState({
-        state: "processing",
-        cancel: () => ffmpeg.terminate(),
-        onProgress: (listener) => ffmpeg.on("progress", listener),
-        totalTime: trimEndField.value - trimStartField.value || undefined,
-      });
-      const outputFile = await processVideo(ffmpeg, fileMap, {
-        text:
-          resolvedTextToDraw !== undefined
-            ? {
-                content: resolvedTextToDraw,
-                style: drawTextOptions,
-              }
-            : undefined,
-        trim: {
-          startTime: trimStartField.value,
-          endTime: trimEndField.value,
-        },
-      });
-      if (typeof outputFile === "string") {
-        failed = true;
-        setExportState({
-          state: "fail",
-          reason: `ffmpeg emitted a string output: ${outputFile}`,
-        });
-        console.error({ outputFile });
-      } else {
-        if (!failed) setExportState({ state: "done", output: getBlob(outputFile, "video/mp4") });
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        switch (err.message) {
-          case "called FFmpeg.terminate()":
-            return;
-          case "Failed to execute 'postMessage' on 'Worker': ArrayBuffer at index 0 is already detached.":
-            setExportState({
-              state: "fail",
-              reason: "Failed to relaunch Web Worker. Please refresh and retry.",
-            });
-            return;
-          default:
-            if (err.message.startsWith("Failed to fetch dynamically imported module:")) {
-              setExportState({
-                state: "fail",
-                reason: "Failed to load extra dependency for processing videos. Please enable network and retry.",
-              });
-              return;
-            }
-
-            console.error(err);
-            setExportState({ state: "fail", reason: err.message });
-            return;
-        }
-      }
-      console.error(err);
-      let message = err;
-      if (err === "ReferenceError: SharedArrayBuffer is not defined") {
-        message = "insecure network context";
-      }
-      setExportState({ state: "fail", reason: `Failed processing video: ${message}` });
-    }
-  };
-
-  const convertWithMediaBunny = async () => {
-    try {
-      if (!fileMap) return;
+      if (fileMap === undefined) throw new Error("No video available");
 
       setExportState({ state: "loadingConverter" });
 
       const progressHub = new EventHub<Progress>();
-      const composition = await convert({
-        sourcesMeta: [fileMap.front, fileMap.rear, fileMap.left, fileMap.right],
-        onProgress: progressHub.dispatch,
-      });
+      const { cancel, result } = await convert(
+        fileMap,
+        { resolvedTextToDraw, drawTextOptions, trimEnd: trimEndField.value, trimStart: trimStartField.value },
+        {
+          onProgress: progressHub.dispatch,
+          onError: (error) => {
+            console.error(error);
+            setExportState({ state: "fail", reason: `Failed processing video: ${error}` });
+          },
+        }
+      );
 
       setExportState({
         state: "processing",
         totalTime: trimEndField.value - trimStartField.value || undefined,
-        cancel: composition.cancel,
+        cancel,
         onProgress: progressHub.addListener,
       });
-      const output = await composition.result;
-      setExportState({ state: "done", output: getBlob(output.buffer, output.mime) });
+
+      setExportState({ state: "done", output: await result });
     } catch (err) {
       console.error(err);
       setExportState({ state: "fail", reason: `Failed processing video: ${err}` });
     }
   };
 
-  const startConvert = () =>
-    ({
-      ["ffmpeg"]: convertWithFFMpeg,
-      ["mediabunny"]: convertWithMediaBunny,
-    }[converter]());
+  const startConvert = async () => autoConvert(await loadConverter(converter));
 
   return (
     <Box display="flex" flexDirection="column" sx={{ gap: 2 }}>

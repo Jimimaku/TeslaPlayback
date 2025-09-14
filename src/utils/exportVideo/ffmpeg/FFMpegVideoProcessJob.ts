@@ -38,7 +38,7 @@ export const ffmpegProcessVideoWork: FFMpegProcessWork<
     {
       text?: {
         content: string | Date;
-        style: DrawTextStyle;
+        style?: DrawTextStyle;
       };
       trim?: { startTime?: number; endTime?: number };
     }
@@ -75,7 +75,7 @@ export const ffmpegProcessVideoWork: FFMpegProcessWork<
       width: videoWidth,
       height: videoHeight,
       padding: {
-        top: style.fontSize,
+        top: style?.fontSize,
       },
     };
     if (typeof content === "string") {

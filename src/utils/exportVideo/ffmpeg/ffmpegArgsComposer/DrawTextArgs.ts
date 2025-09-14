@@ -3,7 +3,7 @@ import { Sizes } from "../spellBook";
 
 export type DrawTextStyle = {
   fontFile?: string;
-  fontSize: number;
+  fontSize?: number;
   fontColor?: string;
   box?: boolean;
   boxColor?: string;
