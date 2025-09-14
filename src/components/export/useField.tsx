@@ -12,7 +12,7 @@ export function useField<V>({
   process?: (value: V) => V;
 }) {
   const [raw, setRaw] = useState(initialValue);
-  const value: V = useMemo(() => process(parseRaw ? parseRaw(raw) : (raw as V)), [raw]);
+  const value: V = useMemo(() => process(parseRaw ? parseRaw(raw) : (raw as V)), [raw, parseRaw, process]);
   const validation = useMemo(() => (validate ? validate(value) : null), [value, validate]);
 
   return {

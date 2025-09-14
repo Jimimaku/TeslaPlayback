@@ -13,7 +13,7 @@ export function usePlaySibling(
   const currentEventTimestamps = React.useMemo(() => {
     const currentEvent = currentEventTimestamp ? eventGroup[currentEventTimestamp] : null;
     return currentEvent ? getSortedKeys(currentEvent) : [];
-  }, [currentEventTimestamp]);
+  }, [eventGroup, currentEventTimestamp]);
   return React.useMemo(() => {
     if (currentClipsTimestamp === null || currentEventTimestamp === null) return;
 
@@ -54,5 +54,13 @@ export function usePlaySibling(
       if (targetClipIndex < 0) goTo(currentEventIndex - 1, targetClipIndex);
       else goTo(currentEventIndex, targetClipIndex);
     };
-  }, [currentClipsTimestamp, currentEventTimestamp, currentEventTimestamps, allEventTimestampsOrdered]);
+  }, [
+    eventGroup,
+    currentClipsTimestamp,
+    currentEventTimestamp,
+    currentEventTimestamps,
+    allEventTimestampsOrdered,
+    setCurrentEventTimestamp,
+    setCurrentTimestamp,
+  ]);
 }

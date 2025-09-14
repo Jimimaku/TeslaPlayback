@@ -14,7 +14,6 @@ type ReactSet<T> = React.Dispatch<React.SetStateAction<T>>;
 type ReactStateIO<T> = { get: T; set: ReactSet<T> };
 
 type ValueOf<T> = T[keyof T];
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ValueOfArray<T extends any[] | readonly any[]> = T[number];
 
 // Default `Object.entries` does not handle `Record` type as expected
