@@ -1,4 +1,4 @@
-import { isNotFalsy } from "../general";
+import { isNotFalsy } from "../../../general";
 
 abstract class Stringifiable {
   abstract toString(): string;

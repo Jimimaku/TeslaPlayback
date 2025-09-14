@@ -1,20 +1,19 @@
-import { vi, expect, test } from "vitest";
-import { getArgs, processVideoWork } from "..";
+import { expect, test, vi } from "vitest";
+import { ffmpegProcessVideoWork, getFFMpegArgs } from "../FFMpegVideoProcessJob";
 
-vi.mock("@/utils/exportVideo/loadFontFile.ts", () => ({
+vi.mock("../loadFontFile.ts", () => ({
   loadFontFile() {
     return new File([], "");
   },
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ffmpeg: any = {
   writeFile: vi.fn(),
 };
 
 test("should return the correct args for draw text with alignment", async () => {
   expect(
-    await getArgs(processVideoWork, ffmpeg, [
+    await getFFMpegArgs(ffmpegProcessVideoWork, ffmpeg, [
       { front: new File([], "front.mp4") },
       {
         text: {
@@ -39,13 +38,13 @@ test("should return the correct args for draw text with alignment", async () => 
 });
 
 test("should return the correct args for single input", async () => {
-  const args = await getArgs(processVideoWork, ffmpeg, [{ front: new File([], "front.mp4") }, {}]);
+  const args = await getFFMpegArgs(ffmpegProcessVideoWork, ffmpeg, [{ front: new File([], "front.mp4") }, {}]);
 
   expect(args).toEqual(["-i", "input_front.mp4", "-map", "[0:v]", "output.mp4"]);
 });
 
 test("should return the correct args for 2 inputs", async () => {
-  const args = await getArgs(processVideoWork, ffmpeg, [{ front: new File([], "front.mp4"), rear: new File([], "rear.mp4") }, {}]);
+  const args = await getFFMpegArgs(ffmpegProcessVideoWork, ffmpeg, [{ front: new File([], "front.mp4"), rear: new File([], "rear.mp4") }, {}]);
 
   expect(args).toEqual([
     "-i",
@@ -65,7 +64,7 @@ nullsrc=size=1280*960 [tag3];
 });
 
 test("should return the correct args for 4 inputs", async () => {
-  const args = await getArgs(processVideoWork, ffmpeg, [
+  const args = await getFFMpegArgs(ffmpegProcessVideoWork, ffmpeg, [
     {
       front: new File([], "front.mp4"),
       rear: new File([], "rear.mp4"),

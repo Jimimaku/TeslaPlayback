@@ -3,9 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import { ExportState } from ".";
 import { TeslaFS } from "../../TeslaFS";
 import { Directions, VideoClipGroup } from "../../common";
-import { DrawTextStyle } from "../../utils/ffmpegArgsComposer/DrawTextArgs";
-import { processVideo } from "../../utils/exportVideo";
-import { loadFFMpeg } from "../../utils/ffmpeg.entry";
+import { EventHub } from "../../utils/EventHub";
+import { Progress } from "../../utils/exportVideo";
+import { loadFFMpeg } from "../../utils/exportVideo/ffmpeg.entry";
+import { processVideo } from "../../utils/exportVideo/ffmpeg/FFMpegVideoProcessJob";
+import { DrawTextStyle } from "../../utils/exportVideo/ffmpeg/ffmpegArgsComposer/DrawTextArgs";
 import { entries, getBlob } from "../../utils/general";
 import { ExpandButton } from "../base/ExpandButton";
 import { Select } from "../base/Select";
@@ -74,18 +76,13 @@ export function ExportIdle({
   const allFieldsValid =
     !!fileMap && trimStartField.validation === null && trimEndField.validation === null && (!shouldDrawText || fontSizeField.validation === null);
 
-  const startConvert = async () => {
+  const convertWithFFMpeg = async () => {
     try {
       if (!fileMap) return;
 
+      setExportState({ state: "loadingConvertor" });
       let failed = false;
-      setExportState({ state: "loadingFFMpeg" });
       const ffmpeg = await loadFFMpeg();
-      setExportState({
-        state: "processing",
-        ffmpeg,
-        totalTime: trimEndField.value - trimStartField.value || undefined,
-      });
       ffmpeg.on("log", ({ message }) => {
         console.log("[ffmpeg]", message);
         switch (message) {
@@ -95,6 +92,12 @@ export function ExportIdle({
             break;
           }
         }
+      });
+      setExportState({
+        state: "processing",
+        cancel: () => ffmpeg.terminate(),
+        onProgress: (listener) => ffmpeg.on("progress", listener),
+        totalTime: trimEndField.value - trimStartField.value || undefined,
       });
       const outputFile = await processVideo(ffmpeg, fileMap, {
         text:

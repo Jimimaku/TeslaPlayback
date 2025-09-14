@@ -1,9 +1,15 @@
-import { Directions } from "../../common";
+import { Directions } from "../../../common";
+import { formatHHMMSS, isNotFalsy } from "../../general";
+import { ComplexFilterChainStep } from "./ffmpegArgsComposer/ComplexFilterChain";
+import { DrawTextArgs, DrawTextStyle } from "./ffmpegArgsComposer/DrawTextArgs";
+import { FFmpegArgsComposer } from "./ffmpegArgsComposer/FFmpegArgsComposer";
 import { filenames } from "./filenames";
-import { FFmpegArgsComposer } from "../ffmpegArgsComposer/FFmpegArgsComposer";
-import { ComplexFilterChainStep } from "../ffmpegArgsComposer/ComplexFilterChain";
-import { DrawTextStyle, DrawTextArgs } from "../ffmpegArgsComposer/DrawTextArgs";
-import { formatHHMMSS, isNotFalsy } from "../general";
+
+export type Sizes = {
+  width: number;
+  height: number;
+  padding?: Partial<Record<"top" | "bottom" | "left" | "right", number>>;
+};
 
 const internalTags = {
   nthVideo: (n: number) => `${n}:v`,
@@ -44,12 +50,6 @@ const merge = (
       );
     }
   }
-};
-
-export type Sizes = {
-  width: number;
-  height: number;
-  padding?: Partial<Record<"top" | "bottom" | "left" | "right", number>>;
 };
 
 const padVideo = (composer: FFmpegArgsComposer, sizes: Sizes) => {

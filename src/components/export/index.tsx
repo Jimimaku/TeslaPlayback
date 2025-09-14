@@ -1,4 +1,3 @@
-import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { Box, Button, Text } from "@primer/react";
 import { memo, useState } from "react";
 import { VideoClipGroup } from "../../common";
@@ -12,13 +11,14 @@ import { ExportProcessing } from "./ExportProcessing";
 export type ExportStateIdle = {
   state: "idle";
 };
-export type ExportStateLoadingFFMpeg = {
-  state: "loadingFFMpeg";
+export type ExportStateLoadingConvertor = {
+  state: "loadingConvertor";
 };
 export type ExportStateProcessing = {
   state: "processing";
-  ffmpeg: FFmpeg;
   totalTime?: number;
+  onProgress: (listener: (progress: { progress: number; time: number }) => void) => void;
+  cancel: () => void;
 };
 export type ExportStateDone = {
   state: "done";
@@ -29,7 +29,7 @@ export type ExportStateFail = {
   reason: string;
 };
 
-export type ExportState = ExportStateIdle | ExportStateLoadingFFMpeg | ExportStateProcessing | ExportStateDone | ExportStateFail;
+export type ExportState = ExportStateIdle | ExportStateLoadingConvertor | ExportStateProcessing | ExportStateDone | ExportStateFail;
 
 export const VideoExporter = memo(function VideoExporter({
   eventName,
@@ -75,7 +75,7 @@ export const VideoExporter = memo(function VideoExporter({
       </Box>
       {run(() => {
         switch (exportState.state) {
-          case "loadingFFMpeg":
+          case "loadingConvertor":
             return <Text>Loading plugins for exporting video...</Text>;
           case "processing":
             return <ExportProcessing exportState={exportState} setExportState={setExportState} />;

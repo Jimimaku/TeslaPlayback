@@ -1,5 +1,5 @@
-import { Sizes } from "../exportVideo/spellBook";
-import { isNotFalsy } from "../general";
+import { isNotFalsy } from "../../../general";
+import { Sizes } from "../spellBook";
 
 export type DrawTextStyle = {
   fontFile?: string;
@@ -14,9 +14,7 @@ export type DrawTextStyle = {
 };
 
 type Alignment = "start" | "end" | "center";
-const isAlignment = (value: unknown): value is Alignment =>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ["start", "end", "center"].includes(value as any);
+const isAlignment = (value: unknown): value is Alignment => ["start", "end", "center"].includes(value as any);
 
 export class DrawTextArgs {
   constructor(

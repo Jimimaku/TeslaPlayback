@@ -42,8 +42,5 @@ export default defineConfig({
   ],
   test: {
     environment: "happy-dom",
-    alias: {
-      "@/": path.resolve(__dirname, "src/"),
-    },
   },
 });
