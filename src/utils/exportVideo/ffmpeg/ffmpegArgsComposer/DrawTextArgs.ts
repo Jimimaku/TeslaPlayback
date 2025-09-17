@@ -1,17 +1,7 @@
+import { DrawTextStyle } from "../..";
 import { isNotFalsy } from "../../../general";
+import { filenames } from "../filenames";
 import { Sizes } from "../spellBook";
-
-export type DrawTextStyle = {
-  fontFile?: string;
-  fontSize?: number;
-  fontColor?: string;
-  box?: boolean;
-  boxColor?: string;
-  x?: string | number;
-  y?: string | number;
-  baseTime?: string;
-  timeFormat?: string;
-};
 
 type Alignment = "start" | "end" | "center";
 const isAlignment = (value: unknown): value is Alignment => ["start", "end", "center"].includes(value as any);
@@ -46,13 +36,13 @@ export class DrawTextArgs {
 
   toString() {
     const text = this.text;
-    const { fontFile, fontSize, fontColor, box, boxColor, x, y, baseTime, timeFormat } = this.options;
+    const { fontSize, fontColor, box, boxColor, x, y, baseTime, timeFormat } = this.options;
 
     return (
       `drawtext=` +
       [
+        ["fontfile", filenames.font],
         baseTime && ["expansion", "strftime"],
-        fontFile && ["fontfile", fontFile],
         fontSize && ["fontsize", fontSize],
         fontColor && ["fontcolor", fontColor],
         baseTime && timeFormat && ["basetime", +baseTime + "000"],

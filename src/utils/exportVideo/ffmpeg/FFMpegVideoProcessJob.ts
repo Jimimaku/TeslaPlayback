@@ -1,10 +1,10 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { DrawTextStyle } from "..";
 import { Directions, directions } from "../../../common";
 import { entries, fromEntries, isNotFalsy, readFileAsArrayBuffer } from "../../general";
 import { addTextToVideo } from "./addTextToVideo";
 import { addTimestampToVideo } from "./addTimestampToVideo";
 import { videoHeight, videoWidth } from "./constants";
-import { DrawTextStyle } from "./ffmpegArgsComposer/DrawTextArgs";
 import { FFmpegArgsComposer } from "./ffmpegArgsComposer/FFmpegArgsComposer";
 import { filenames } from "./filenames";
 import { spellBook } from "./spellBook";

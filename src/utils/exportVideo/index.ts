@@ -1,5 +1,3 @@
-import { DrawTextStyle } from "./ffmpeg/ffmpegArgsComposer/DrawTextArgs";
-
 interface FileMap {
   front?: File;
   rear?: File;
@@ -42,3 +40,14 @@ export async function loadConverter(converter: "ffmpeg" | "mediabunny"): Promise
       return (await import("./mediabunny")).convert;
   }
 }
+
+export type DrawTextStyle = {
+  fontSize?: number;
+  fontColor?: string;
+  box?: boolean;
+  boxColor?: string;
+  x?: string | number;
+  y?: string | number;
+  baseTime?: string;
+  timeFormat?: string;
+};

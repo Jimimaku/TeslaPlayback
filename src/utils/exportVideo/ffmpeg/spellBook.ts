@@ -1,9 +1,9 @@
+import { DrawTextStyle } from "..";
 import { Directions } from "../../../common";
 import { formatHHMMSS, isNotFalsy } from "../../general";
 import { ComplexFilterChainStep } from "./ffmpegArgsComposer/ComplexFilterChain";
-import { DrawTextArgs, DrawTextStyle } from "./ffmpegArgsComposer/DrawTextArgs";
+import { DrawTextArgs } from "./ffmpegArgsComposer/DrawTextArgs";
 import { FFmpegArgsComposer } from "./ffmpegArgsComposer/FFmpegArgsComposer";
-import { filenames } from "./filenames";
 
 export type Sizes = {
   width: number;
@@ -75,10 +75,7 @@ const addText = (composer: FFmpegArgsComposer, sizes: Sizes, text: string, textO
   const lastTag = chain.lastTag;
   chain.append(
     new ComplexFilterChainStep(
-      new DrawTextArgs(text, {
-        ...textOptions,
-        fontFile: filenames.font,
-      }).setAlignment({ width: sizes.width, height: textOptions?.fontSize ?? 24 }, "center", "center")
+      new DrawTextArgs(text, textOptions).setAlignment({ width: sizes.width, height: textOptions?.fontSize ?? 24 }, "center", "center")
     ).addInputTag(lastTag)
   );
 };
@@ -90,10 +87,7 @@ const addTimestamp = (composer: FFmpegArgsComposer, sizes: Sizes, baseTime: Date
   const lastTag = chain.lastTag;
   chain.append(
     new ComplexFilterChainStep(
-      new DrawTextArgs("", {
-        ...textOptions,
-        fontFile: filenames.font,
-      })
+      new DrawTextArgs("", textOptions)
         .setAsTimeStamp(baseTime)
         .setAlignment({ width: sizes.width, height: textOptions?.fontSize ?? 24 }, "center", "center")
     ).addInputTag(lastTag)

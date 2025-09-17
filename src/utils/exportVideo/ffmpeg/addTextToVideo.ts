@@ -1,4 +1,4 @@
-import { DrawTextStyle } from "./ffmpegArgsComposer/DrawTextArgs";
+import { DrawTextStyle } from "..";
 import { FFMpegProcessWork } from "./FFMpegVideoProcessJob";
 import { filenames } from "./filenames";
 import { loadFontFile } from "./loadFontFile";
