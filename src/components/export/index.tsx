@@ -6,7 +6,7 @@ import { run } from "../../utils/general";
 import { Dialog } from "../base/Dialog";
 import { ExportDone } from "./ExportDone";
 import { ExportFail } from "./ExportFail";
-import { ExportIdle } from "./ExportIdle";
+import { ExportPrepare } from "./ExportPrepare";
 import { ExportProcessing } from "./ExportProcessing";
 
 export type ExportStateIdle = {
@@ -72,7 +72,7 @@ export const VideoExporter = memo(function VideoExporter({
           exportState.state === "idle" ? undefined : "none"
         }
       >
-        <ExportIdle videos={videos} totalTime={totalTime} setExportState={setExportState} />
+        <ExportPrepare videos={videos} totalTime={totalTime} setExportState={setExportState} />
       </Box>
       {run(() => {
         switch (exportState.state) {

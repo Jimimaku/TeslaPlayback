@@ -19,7 +19,7 @@ const cameraOptions: Option<CameraOption>[] = [
   { value: "all", label: "Grid (2×2)" },
 ];
 
-export function ExportIdle({
+export function ExportPrepare({
   setExportState,
   videos,
   totalTime,
@@ -47,8 +47,8 @@ export function ExportIdle({
   const [drawTextOptions, setDrawTextOptions] = useState<DrawTextStyle>({
     fontSize: fontSizeField.value,
     fontColor: "#ffffff",
-    box: true,
-    boxColor: "#000000",
+    background: true,
+    backgroundColor: "#000000",
   });
   useEffect(() => {
     setDrawTextOptions({ ...drawTextOptions, fontSize: fontSizeField.value });
@@ -83,7 +83,7 @@ export function ExportIdle({
       const progressHub = new EventHub<Progress>();
       const { cancel, result } = await convert(
         fileMap,
-        { resolvedTextToDraw, drawTextOptions, trimEnd: trimEndField.value, trimStart: trimStartField.value },
+        { text: resolvedTextToDraw ? [resolvedTextToDraw, drawTextOptions] : undefined, trim: [trimStartField.value, trimEndField.value] },
         {
           onProgress: progressHub.dispatch,
           onError: (error) => {
@@ -172,8 +172,8 @@ export function ExportIdle({
                     <FormControl.Label>Box Color</FormControl.Label>
                     <input
                       type="color"
-                      value={drawTextOptions.boxColor ?? ""}
-                      onChange={(e) => setDrawTextOptions({ ...drawTextOptions, boxColor: e.target.value })}
+                      value={drawTextOptions.backgroundColor ?? ""}
+                      onChange={(e) => setDrawTextOptions({ ...drawTextOptions, backgroundColor: e.target.value })}
                     />
                   </FormControl>
                 </Box>

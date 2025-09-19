@@ -5,15 +5,15 @@ interface FileMap {
   right?: File;
 }
 
+export interface ConvertConfig {
+  text?: [content: Date | string, style: DrawTextStyle];
+  trim?: [start: number, end: number];
+}
+
 export interface Convert {
   (
     inputs: FileMap,
-    options: {
-      resolvedTextToDraw?: Date | string;
-      drawTextOptions?: DrawTextStyle;
-      trimStart?: number;
-      trimEnd?: number;
-    },
+    options: ConvertConfig,
     {
       onProgress,
       onError,
@@ -44,10 +44,10 @@ export async function loadConverter(converter: "ffmpeg" | "mediabunny"): Promise
 export type DrawTextStyle = {
   fontSize?: number;
   fontColor?: string;
-  box?: boolean;
-  boxColor?: string;
-  x?: string | number;
-  y?: string | number;
+  background?: boolean;
+  backgroundColor?: string;
+  x?: number;
+  y?: number;
   baseTime?: string;
   timeFormat?: string;
 };

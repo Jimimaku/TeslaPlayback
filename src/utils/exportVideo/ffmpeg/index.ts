@@ -22,15 +22,15 @@ export const convert: Convert = async (fileMap, options, { onError, onProgress }
     const getOutputFile = async () => {
       const outputFile = await processVideo(ffmpeg, fileMap, {
         text:
-          options.resolvedTextToDraw !== undefined
+          options.text !== undefined
             ? {
-                content: options.resolvedTextToDraw,
-                style: options.drawTextOptions,
+                content: options.text[0],
+                style: options.text[1],
               }
             : undefined,
-        trim: {
-          startTime: options.trimStart,
-          endTime: options.trimEnd,
+        trim: options.trim && {
+          startTime: options.trim[0],
+          endTime: options.trim[1],
         },
       });
 

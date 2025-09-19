@@ -12,8 +12,9 @@ import {
   VideoSampleSink,
   getFirstEncodableVideoCodec,
 } from "mediabunny";
-import { Convert, Progress } from "..";
+import { Convert, ConvertConfig, Progress } from "..";
 import { getBlob, isNotFalsy } from "../../general";
+import { drawTextOverlay } from "./text";
 
 type LoadedTrack = {
   input: Input;
@@ -68,10 +69,14 @@ async function mediaBunnyConvert({
   sourcesMeta,
   fps = 30,
   onProgress,
+  text,
+  trim,
 }: {
   sourcesMeta: (SourceMeta | undefined)[];
   fps?: number; // e.g. 30
   onProgress?: (progress: Progress) => void;
+  text: ConvertConfig["text"];
+  trim?: ConvertConfig["trim"];
 }) {
   let canceled = false;
   const cancel = () => {
@@ -138,6 +143,15 @@ async function mediaBunnyConvert({
       }
 
       const t = i * frameDur;
+      if (t % 1000 === 0) {
+        console.debug(`Processing frame ${i + 1}/${frameCount} at ${t.toFixed(2)}s`);
+      }
+      if (trim) {
+        const [trimStart, trimEnd] = trim;
+        if (t < trimStart) continue;
+        if (t > trimEnd) break;
+      }
+
       ctx.clearRect(0, 0, outWidth, outHeight);
 
       // fetch 4 frames for timestamp t
@@ -154,6 +168,17 @@ async function mediaBunnyConvert({
         // Destination rect inside the quad:
         s.draw(ctx, quad.x + x, quad.y + y, w, h); // accounts for rotation
         s.close(); // release resources ASAP
+      }
+
+      if (text) {
+        const [content, textStyle] = text;
+        if (content instanceof Date) {
+          const timeOfFrame = new Date(+content + t * 1000);
+          const contentOfFrame = timeOfFrame.toLocaleString();
+          drawTextOverlay(ctx, contentOfFrame, textStyle);
+        } else {
+          drawTextOverlay(ctx, content, textStyle);
+        }
       }
 
       await videoSource.add(t, frameDur); // encode the current canvas frame
@@ -176,4 +201,6 @@ export const convert: Convert = (inputs, options, { onProgress }) =>
     sourcesMeta: [inputs.front, inputs.rear, inputs.left, inputs.right],
     fps: 30,
     onProgress,
+    text: options.text,
+    trim: options.trim,
   });

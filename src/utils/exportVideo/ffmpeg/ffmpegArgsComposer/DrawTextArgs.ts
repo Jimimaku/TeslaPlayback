@@ -12,8 +12,8 @@ export class DrawTextArgs {
     public options: DrawTextStyle = {
       fontSize: 48,
       fontColor: "white",
-      box: true,
-      boxColor: "black",
+      background: true,
+      backgroundColor: "black",
     }
   ) {}
 
@@ -36,7 +36,7 @@ export class DrawTextArgs {
 
   toString() {
     const text = this.text;
-    const { fontSize, fontColor, box, boxColor, x, y, baseTime, timeFormat } = this.options;
+    const { fontSize, fontColor, background: box, backgroundColor: boxColor, x, y, baseTime, timeFormat } = this.options;
 
     return (
       `drawtext=` +
