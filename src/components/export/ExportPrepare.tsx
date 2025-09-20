@@ -28,7 +28,6 @@ export function ExportPrepare({
   videos: VideoClipGroup;
   totalTime?: number;
 }) {
-  const [converter, setConverter] = useState<"ffmpeg" | "mediabunny">("mediabunny");
   const [view, setView] = useState<CameraOption>("front");
   const fileMap = useMemo(() => {
     const { front, rear, left, right } = videos;
@@ -107,20 +106,10 @@ export function ExportPrepare({
     }
   };
 
-  const startConvert = async () => autoConvert(await loadConverter(converter));
+  const startConvert = async () => autoConvert(await loadConverter());
 
   return (
     <Box display="flex" flexDirection="column" sx={{ gap: 2 }}>
-      <FormControl>
-        <FormControl.Label>Converter</FormControl.Label>
-        <Select<typeof converter>
-          sx={{ width: "100%" }}
-          value={converter}
-          onChange={(option) => setConverter(option)}
-          options={["ffmpeg", "mediabunny"]}
-        />
-      </FormControl>
-      <Text>Please use Firefox, otherwise export might fail.</Text>
       <FormControl>
         <FormControl.Label>Cameras</FormControl.Label>
         <Select<CameraOption> sx={{ width: "100%" }} value={view} onChange={(option) => setView(option)} options={cameraOptions} />

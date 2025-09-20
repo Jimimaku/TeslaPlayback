@@ -17,7 +17,6 @@
     "@types/node": "^18",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
-    "@types/ua-parser-js": "^0.7.39",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "@vitejs/plugin-react": "^4.2.1",
@@ -39,17 +38,13 @@
     "last 1 Chrome version"
   ],
   "dependencies": {
-    "@ffmpeg/core-mt": "^0.12.9",
-    "@ffmpeg/ffmpeg": "^0.12.15",
-    "@ffmpeg/util": "^0.12.2",
     "@primer/react": "^36.12.0",
     "classnames": "^2.3.1",
     "mediabunny": "^1.15.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-iifc": "^1.2.0",
-    "styled-components": "^5.3.5",
-    "ua-parser-js": "^1.0.37"
+    "styled-components": "^5.3.5"
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

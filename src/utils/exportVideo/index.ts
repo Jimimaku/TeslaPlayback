@@ -32,13 +32,8 @@ export type Progress = {
   time: number;
 };
 
-export async function loadConverter(converter: "ffmpeg" | "mediabunny"): Promise<Convert> {
-  switch (converter) {
-    case "ffmpeg":
-      return (await import("./ffmpeg")).convert;
-    case "mediabunny":
-      return (await import("./mediabunny")).convert;
-  }
+export async function loadConverter(): Promise<Convert> {
+  return (await import("./mediabunny")).convert;
 }
 
 export type DrawTextStyle = {
