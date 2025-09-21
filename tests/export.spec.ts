@@ -1,19 +1,22 @@
 import { expect, test } from "@playwright/test";
 
-const locate = (type: "button" | string) => (text: string) => `${type}:text("${text}")`;
-
 test("export video", async ({ page }) => {
   await page.goto("http://localhost:5173/");
 
-  await page.locator(locate(`span`)("Try with demo files")).click();
+  await page.getByRole("button", { name: "Try with demo files" }).click();
 
-  expect(page.getByLabel(`camera-view-front`)).toHaveJSProperty("paused", false);
+  expect(page.getByLabel("camera-view-front")).toHaveJSProperty("paused", false);
 
-  await page.locator(locate(`span`)("Export current event")).click();
+  await page.getByRole("button", { name: "Export current event" }).click();
 
-  await page.locator(locate(`span`)("Start")).click();
+  await page.getByLabel("Cameras").selectOption("all");
+  await page.getByLabel("Trim Start").fill("1");
+  await page.getByLabel("Trim End").fill("2");
 
-  await page.locator(locate(`span`)("Cancel")).isEnabled();
+  await page.getByRole("button", { name: "Start" }).click();
 
-  await page.locator(locate(`span`)("Done")).click();
+  await page.getByRole("button", { name: "Cancel" }).isEnabled();
+
+  await page.getByRole("button", { name: "Done" }).isEnabled();
+  expect(page.locator("video[aria-label='Exported video']")).toHaveJSProperty("paused", false);
 });

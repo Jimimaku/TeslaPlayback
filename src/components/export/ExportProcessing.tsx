@@ -1,7 +1,7 @@
 import { Box, Button, ProgressBar, Text } from "@primer/react";
 import { useEffect, useState } from "react";
 import { ExportStateIdle, ExportStateProcessing } from ".";
-import { Progress } from "../../utils/exportVideo";
+import { Progress } from "../../utils/exportVideo/convert";
 
 export function ExportProcessing({
   exportState,
@@ -10,26 +10,16 @@ export function ExportProcessing({
   exportState: ExportStateProcessing;
   setExportState: (state: ExportStateIdle) => void;
 }) {
-  const { onProgress, cancel, totalTime } = exportState;
-  const [progress, setProgress] = useState<Progress>({
-    progress: 0,
-    time: 0,
-  });
+  const { onProgress, cancel } = exportState;
+  const [progress, setProgress] = useState<Progress>(0);
   useEffect(() => {
     onProgress(setProgress);
   }, [onProgress]);
 
-  const [processedTime, TotalTimeToProcess]: [number, number] = totalTime ? [progress.time / (1000 * 1000), totalTime] : [progress.progress, 1];
-
   return (
     <Box display="flex" flexDirection="column" sx={{ gap: 2 }}>
       <Box display="flex" alignItems="center" sx={{ gap: 2 }}>
-        <ProgressBar sx={{ flex: 1 }} animated progress={(processedTime / TotalTimeToProcess) * 100} />
-        {totalTime && (
-          <Text>
-            {processedTime.toFixed(1)}s / {TotalTimeToProcess.toFixed(1)}s
-          </Text>
-        )}
+        <ProgressBar sx={{ flex: 1 }} animated progress={progress * 100} />
         <Button
           onClick={() => {
             cancel?.();

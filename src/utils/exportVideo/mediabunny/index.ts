@@ -12,8 +12,8 @@ import {
   VideoSampleSink,
   getFirstEncodableVideoCodec,
 } from "mediabunny";
-import { Convert, ConvertConfig, Progress } from "..";
 import { getBlob, isNotFalsy } from "../../general";
+import { Convert, ConvertConfig, Progress } from "../convert";
 import { drawTextOverlay } from "./text";
 
 type LoadedTrack = {
@@ -22,7 +22,7 @@ type LoadedTrack = {
   duration: number; // seconds
 };
 
-type SourceMeta = string | URL | Blob | ArrayBuffer | ArrayBufferView;
+export type SourceMeta = string | URL | Blob | ArrayBuffer | ArrayBufferView;
 
 const resolveSource = (source: SourceMeta) => {
   if (typeof source === "string") return new UrlSource(source);
@@ -43,40 +43,31 @@ async function loadVideo(sourceMeta: SourceMeta): Promise<LoadedTrack> {
   return { input, videoTrack, duration };
 }
 
-type Quad = { x: number; y: number; w: number; h: number };
+type LayoutSlot = { x: number; y: number; w: number; h: number };
 
-function layout2x2(W: number, H: number): Quad[] {
-  const cw = Math.floor(W / 2);
-  const ch = Math.floor(H / 2);
-  return [
-    { x: 0, y: 0, w: cw, h: ch }, // top-left
-    { x: cw, y: 0, w: cw, h: ch }, // top-right
-    { x: 0, y: ch, w: cw, h: ch }, // bottom-left
-    { x: cw, y: ch, w: cw, h: ch }, // bottom-right
-  ];
-}
-
-function fitContain(sw: number, sh: number, dw: number, dh: number) {
-  const scale = Math.min(dw / sw, dh / sh);
-  const w = Math.round(sw * scale);
-  const h = Math.round(sh * scale);
-  const x = Math.floor((dw - w) / 2);
-  const y = Math.floor((dh - h) / 2);
-  return { x, y, w, h };
+function generateLayoutSlots(size: { width: number; height: number }, rowsAmount: number, colsAmount: number): LayoutSlot[] {
+  const slots: LayoutSlot[] = [];
+  for (let row = 0; row < rowsAmount; row++) {
+    for (let col = 0; col < colsAmount; col++) {
+      slots.push({
+        x: col * size.width,
+        y: row * size.height,
+        w: size.width,
+        h: size.height,
+      });
+    }
+  }
+  return slots;
 }
 
 async function mediaBunnyConvert({
   sourcesMeta,
-  fps = 30,
   onProgress,
-  text,
-  trim,
+  options: { text, trim } = {},
 }: {
   sourcesMeta: (SourceMeta | undefined)[];
-  fps?: number; // e.g. 30
   onProgress?: (progress: Progress) => void;
-  text: ConvertConfig["text"];
-  trim?: ConvertConfig["trim"];
+  options?: ConvertConfig;
 }) {
   let canceled = false;
   const cancel = () => {
@@ -89,8 +80,9 @@ async function mediaBunnyConvert({
     const inputs = await Promise.all(sourcesMeta.filter(isNotFalsy).map(loadVideo)); // compute duration, get videoTrack
 
     // ) Timeline: use min duration across the 4 videos
-    const minDur = Math.min(...inputs.map((i) => i.duration));
+    const fps = 30; // TODO: get from video
     const frameDur = 1 / fps;
+    const minDur = Math.min(...inputs.map((i) => i.duration));
     const frameCount = Math.max(1, Math.floor(minDur * fps));
 
     // ) Get video resolutions
@@ -101,15 +93,24 @@ async function mediaBunnyConvert({
       if (!videoTrack) return size;
 
       const { displayWidth, displayHeight } = videoTrack;
+      if (!size)
+        return {
+          w: displayWidth,
+          h: displayHeight,
+        };
+
       return {
-        w: Math.max(size?.w ?? 0, displayWidth),
-        h: Math.max(size?.h ?? 0, displayHeight),
+        w: Math.max(size.w, displayWidth),
+        h: Math.max(size.h, displayHeight),
       };
     }, null);
-
     if (!displaySize) throw new Error("No video track found from inputs");
-    const outHeight = displaySize.h * 2;
-    const outWidth = displaySize.w * 2;
+
+    const colsAmount = Math.ceil(Math.sqrt(sourcesMeta.length));
+    const rowsAmount = Math.ceil(sourcesMeta.length / colsAmount);
+
+    const outWidth = displaySize.w * colsAmount;
+    const outHeight = displaySize.h * rowsAmount;
 
     // ) Canvas & output
     const canvas = document.createElement("canvas");
@@ -133,9 +134,19 @@ async function mediaBunnyConvert({
     output.addVideoTrack(videoSource); // add before start()
 
     await output.start();
-    const quads = layout2x2(outWidth, outHeight);
+    const quads = generateLayoutSlots(
+      {
+        width: displaySize.w,
+        height: displaySize.h,
+      },
+      rowsAmount,
+      colsAmount
+    );
     const sinks = inputs.map(({ videoTrack }) => videoTrack && new VideoSampleSink(videoTrack));
-    for (let i = 0; i < frameCount; i++) {
+    const [firstFrame, finalFrame] = trim?.map((s) => s * fps) ?? [0, frameCount];
+    const totalFrames = finalFrame - firstFrame;
+
+    for (let i = firstFrame; i < finalFrame; i++) {
       if (canceled) {
         videoSource.close();
         output.cancel();
@@ -143,30 +154,22 @@ async function mediaBunnyConvert({
       }
 
       const t = i * frameDur;
-      if (t % 1000 === 0) {
-        console.debug(`Processing frame ${i + 1}/${frameCount} at ${t.toFixed(2)}s`);
-      }
-      if (trim) {
-        const [trimStart, trimEnd] = trim;
-        if (t < trimStart) continue;
-        if (t > trimEnd) break;
-      }
+
+      onProgress?.((i - firstFrame) / totalFrames);
 
       ctx.clearRect(0, 0, outWidth, outHeight);
 
-      // fetch 4 frames for timestamp t
       const samples = await Promise.all(sinks.map((s) => s?.getSample(t)));
 
-      // draw each into its quad with letterboxing (contain)
-      for (let k = 0; k < 4; k++) {
+      for (let k = 0; k < sourcesMeta.length; k++) {
         const s = samples[k];
         if (!s) continue;
 
         const quad = quads[k];
-        const { x, y, w, h } = fitContain(displaySize.w, displaySize.h, quad.w, quad.h);
+        if (!quad) continue;
 
         // Destination rect inside the quad:
-        s.draw(ctx, quad.x + x, quad.y + y, w, h); // accounts for rotation
+        s.draw(ctx, quad.x, quad.y, quad.w, quad.h); // accounts for rotation
         s.close(); // release resources ASAP
       }
 
@@ -182,8 +185,6 @@ async function mediaBunnyConvert({
       }
 
       await videoSource.add(t, frameDur); // encode the current canvas frame
-
-      onProgress?.({ progress: (i + 1) / frameCount, time: t * 1000 * 1000 });
     }
 
     await output.finalize();
@@ -198,9 +199,7 @@ async function mediaBunnyConvert({
 
 export const convert: Convert = (inputs, options, { onProgress }) =>
   mediaBunnyConvert({
-    sourcesMeta: [inputs.front, inputs.rear, inputs.left, inputs.right],
-    fps: 30,
+    sourcesMeta: [inputs.front, inputs.rear, inputs.left, inputs.right].filter(isNotFalsy),
     onProgress,
-    text: options.text,
-    trim: options.trim,
+    options,
   });

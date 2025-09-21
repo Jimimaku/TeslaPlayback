@@ -1,18 +1,16 @@
-import { DrawTextStyle } from "..";
+import { DrawTextStyle } from "../convert";
 
-// text-overlay.ts
 export type TextOverlay = {
   fontSize?: number; // px (default 36)
   fontColor?: string; // CSS color; default '#fff'
   x: number; // canvas pixels
   y: number; // canvas pixels
-  backgroundColor?: string; // CSS color; default 'rgba(0,0,0,0.6)'
-
   padding?: number; // px; default 8
-  align?: CanvasTextAlign; // 'left'|'center'|'right'... default 'left'
-  baseline?: CanvasTextBaseline; // default 'alphabetic'
-  radius?: number; // bg corner radius; default 6
+
+  backgroundColor?: string; // CSS color; default 'rgba(0,0,0,0.6)'
   fontFamily?: string; // default 'system-ui, sans-serif'
+  baseline?: CanvasTextBaseline; // default 'alphabetic'
+  align?: CanvasTextAlign; // 'left'|'center'|'right'... default 'left'
 };
 
 const transform = (drawTextStyle: DrawTextStyle): TextOverlay => ({
@@ -34,7 +32,6 @@ export function drawTextOverlay(ctx: CanvasRenderingContext2D, text: string, dra
     padding = 8,
     align = "left",
     baseline = "alphabetic",
-    radius = 6,
   } = transform(drawTextStyle);
 
   ctx.save();
@@ -63,7 +60,7 @@ export function drawTextOverlay(ctx: CanvasRenderingContext2D, text: string, dra
   const bh = Math.ceil(textH + padding * 2);
 
   // Rounded background
-  roundRect(ctx, left - padding, top - padding, bw, bh, radius);
+  roundRect(ctx, left - padding, top - padding, bw, bh);
   ctx.fillStyle = bgColor;
   ctx.fill();
 
@@ -74,7 +71,7 @@ export function drawTextOverlay(ctx: CanvasRenderingContext2D, text: string, dra
   ctx.restore();
 }
 
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number = 0) {
   const rr = Math.min(r, w / 2, h / 2);
   ctx.beginPath();
   ctx.moveTo(x + rr, y);

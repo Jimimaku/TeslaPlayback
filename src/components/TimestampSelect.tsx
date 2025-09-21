@@ -1,6 +1,8 @@
 import { NavList, NavListProps } from "@primer/react";
 import { TeslaFS } from "../TeslaFS";
-import { CommonSelectProps } from "./base/Select";
+import { SelectProps } from "./base/Select";
+
+type TimestampSelectProps = Omit<NonConflictJoin<SelectProps<TeslaFS.Timestamp>, NavListProps>, "children">;
 
 export function TimestampSelect({
   options,
@@ -8,7 +10,7 @@ export function TimestampSelect({
   onChange,
   renderOption = ({ value }) => TeslaFS.formatTimestamp(value),
   ...rest
-}: Omit<NonConflictJoin<CommonSelectProps<TeslaFS.Timestamp>, NavListProps>, "children">) {
+}: TimestampSelectProps) {
   return (
     <NavList {...rest}>
       {options.map((option) => (

@@ -1,7 +1,7 @@
 import { Box, Button, Text } from "@primer/react";
 import { memo, useState } from "react";
 import { VideoClipGroup } from "../../common";
-import { Progress } from "../../utils/exportVideo";
+import { Progress } from "../../utils/exportVideo/convert";
 import { run } from "../../utils/general";
 import { Dialog } from "../base/Dialog";
 import { ExportDone } from "./ExportDone";
@@ -17,7 +17,6 @@ export type ExportStateLoadingConverter = {
 };
 export type ExportStateProcessing = {
   state: "processing";
-  totalTime?: number;
   onProgress: (listener: (progress: Progress) => void) => void;
   cancel: () => void;
 };
@@ -57,7 +56,13 @@ export const VideoExporter = memo(function VideoExporter({
   return (
     <Dialog<HTMLButtonElement>
       trigger={(isOpen, ref) => (
-        <Button ref={ref} onClick={() => isOpen.set(true)}>
+        <Button
+          ref={ref}
+          onClick={() => {
+            videoPlayControl?.pause?.();
+            isOpen.set(true);
+          }}
+        >
           Export current event
         </Button>
       )}

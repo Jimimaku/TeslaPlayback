@@ -29,6 +29,7 @@ function useVideoControl() {
   };
 }
 
+const showLayoutSelect = false;
 export function MatrixPlayer({
   eventName,
   baseTime,
@@ -53,7 +54,7 @@ export function MatrixPlayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [controlledProgress]);
 
-  const [layoutKey, setLayoutKey] = useState<LayoutKey>("1/2/1");
+  const [layoutKey, setLayoutKey] = useState<LayoutKey>("2/2");
   const layout = useVideosLayout(layoutKey, 3 / 4);
 
   const controls: Record<Directions, ReturnType<typeof useVideoControl>> = {
@@ -181,19 +182,21 @@ export function MatrixPlayer({
             value={`${playbackRate}`}
             onChange={(value) => setPlaybackRate(parseFloat(value))}
           />
-          <DropdownSelect
-            title={
-              <>
-                <VersionsIcon /> {layoutKey}
-              </>
-            }
-            options={layoutKeys.map((key) => ({
-              value: key,
-              label: key,
-            }))}
-            value={layoutKey}
-            onChange={setLayoutKey}
-          />
+          {showLayoutSelect && (
+            <DropdownSelect
+              title={
+                <>
+                  <VersionsIcon /> {layoutKey}
+                </>
+              }
+              options={layoutKeys.map((key) => ({
+                value: key,
+                label: key,
+              }))}
+              value={layoutKey}
+              onChange={setLayoutKey}
+            />
+          )}
           <FormControl sx={{ alignItems: "center" }}>
             <Checkbox checked={isAutoPlay} onChange={() => setIsAutoPlay(!isAutoPlay)} />
             <FormControl.Label sx={{ whiteSpace: "nowrap" }}>Auto Play</FormControl.Label>

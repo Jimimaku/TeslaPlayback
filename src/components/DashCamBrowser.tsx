@@ -11,7 +11,7 @@ import { MatrixPlayer } from "./MatrixPlayer";
 import { ParserLogViewer } from "./ParserLogViewer";
 import { SubNavs } from "./SubNavs";
 import { TimestampSelect } from "./TimestampSelect";
-import { Select } from "./base/Select";
+import { FormSelect } from "./base/Select";
 
 export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
   const { eventGroup, categorizedGroups, parserLog } = useDashCamEvents(fileList) ?? {};
@@ -86,31 +86,31 @@ export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
             </FormControl>
           </Box>
           <Box display={["flex", "flex", "none"]} flexWrap={["wrap", "nowrap", "nowrap"]} sx={{ gap: 1 }}>
-            <FormControl>
-              <FormControl.Label>
-                Events <CounterLabel>{allEventTimestampsOrdered.length}</CounterLabel>
-              </FormControl.Label>
-              <Select
-                options={allEventTimestampsOrdered}
-                renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp)}
-                value={currentEventTimestamp}
-                onChange={(timestamp) => {
-                  setCurrentClipsTimestamp(null);
-                  setCurrentEventTimestamp(timestamp);
-                }}
-              />
-            </FormControl>
-            <FormControl>
-              <FormControl.Label>
-                Clips <CounterLabel>{currentEventTimestamps.length}</CounterLabel>
-              </FormControl.Label>
-              <Select
-                options={currentEventTimestamps}
-                renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp, "time")}
-                value={currentClipsTimestamp}
-                onChange={setCurrentClipsTimestamp}
-              />
-            </FormControl>
+            <FormSelect
+              label={
+                <>
+                  Events <CounterLabel>{allEventTimestampsOrdered.length}</CounterLabel>
+                </>
+              }
+              options={allEventTimestampsOrdered}
+              renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp)}
+              value={currentEventTimestamp}
+              onChange={(timestamp) => {
+                setCurrentClipsTimestamp(null);
+                setCurrentEventTimestamp(timestamp);
+              }}
+            />
+            <FormSelect
+              label={
+                <>
+                  Clips <CounterLabel>{currentEventTimestamps.length}</CounterLabel>
+                </>
+              }
+              options={currentEventTimestamps}
+              renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp, "time")}
+              value={currentClipsTimestamp}
+              onChange={setCurrentClipsTimestamp}
+            />
           </Box>
         </Box>
         {/* minWidth for preventing the area grow out of view */}

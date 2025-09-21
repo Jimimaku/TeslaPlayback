@@ -1,4 +1,4 @@
-interface FileMap {
+export interface FileMap {
   front?: File;
   rear?: File;
   left?: File;
@@ -12,7 +12,7 @@ export interface ConvertConfig {
 
 export interface Convert {
   (
-    inputs: FileMap,
+    fileMap: FileMap,
     options: ConvertConfig,
     {
       onProgress,
@@ -27,10 +27,7 @@ export interface Convert {
   }>;
 }
 
-export type Progress = {
-  progress: number;
-  time: number;
-};
+export type Progress = number;
 
 export async function loadConverter(): Promise<Convert> {
   return (await import("./mediabunny")).convert;

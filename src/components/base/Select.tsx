@@ -1,29 +1,39 @@
-import { Select as PrimerSelect, SelectProps } from "@primer/react";
+import { FormControl, Select as PrimerSelect, SelectProps as PrimerSelectProps } from "@primer/react";
 import { ReactNode } from "react";
 
-export type CommonSelectProps<T extends string> = {
+const resolveOption = <T extends string>(option: T | Option<T>): Option<T> =>
+  typeof option === "string" ? { value: option, label: option } : option;
+
+export type SelectProps<T extends string> = {
   options: T[] | Option<T>[];
-  renderOption?: (option: Option<T>) => ReactNode;
+  renderOption?: <T extends string>(option: Option<T>) => ReactNode;
 } & IO<T, T | null>;
 
-export function Select<T extends string>({
+export type FormSelectProps<T extends string> = NonConflictJoin<
+  {
+    label: ReactNode;
+  } & SelectProps<T>,
+  PrimerSelectProps
+>;
+
+export function FormSelect<T extends string>({
+  label,
   options,
   value,
   onChange,
   renderOption = (option) => (typeof option === "string" ? option : option.label),
   ...rest
-}: NonConflictJoin<CommonSelectProps<T>, SelectProps>) {
+}: FormSelectProps<T>) {
   return (
-    <PrimerSelect value={value ?? undefined} onChange={(e) => onChange(e.target.value as T)} {...rest}>
-      {options.map((option) => (
-        <PrimerSelect.Option
-          key={typeof option === "string" ? option : option.value}
-          aria-current={value === option}
-          value={typeof option === "string" ? option : option.value}
-        >
-          {renderOption(typeof option === "string" ? { value: option, label: option } : option)}
-        </PrimerSelect.Option>
-      ))}
-    </PrimerSelect>
+    <FormControl>
+      <FormControl.Label>{label}</FormControl.Label>
+      <PrimerSelect value={value ?? undefined} onChange={(e) => onChange(e.target.value as T)} {...rest}>
+        {options.map(resolveOption).map((option) => (
+          <PrimerSelect.Option key={option.value} aria-current={value === option.value} value={option.value}>
+            {renderOption(option)}
+          </PrimerSelect.Option>
+        ))}
+      </PrimerSelect>
+    </FormControl>
   );
 }

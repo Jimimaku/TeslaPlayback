@@ -4,10 +4,10 @@ import { ExportState } from ".";
 import { TeslaFS } from "../../TeslaFS";
 import { Directions, VideoClipGroup } from "../../common";
 import { EventHub } from "../../utils/EventHub";
-import { Convert, DrawTextStyle, loadConverter, Progress } from "../../utils/exportVideo";
+import { Convert, DrawTextStyle, FileMap, loadConverter, Progress } from "../../utils/exportVideo/convert";
 import { entries } from "../../utils/general";
 import { ExpandButton } from "../base/ExpandButton";
-import { Select } from "../base/Select";
+import { FormSelect } from "../base/Select";
 import { useNumberField } from "./useNumberField";
 
 type CameraOption = Directions | "all";
@@ -19,6 +19,24 @@ const cameraOptions: Option<CameraOption>[] = [
   { value: "all", label: "Grid (2×2)" },
 ];
 
+const filterFileMap = (fileMap: FileMap, view: CameraOption): FileMap => {
+  switch (view) {
+    case "front":
+      return { front: fileMap.front };
+    case "rear":
+      return { rear: fileMap.rear };
+    case "left":
+      return { left: fileMap.left };
+    case "right":
+      return { right: fileMap.right };
+    case "all":
+      return fileMap;
+    default:
+      throw new Error("Invalid view");
+  }
+};
+
+const showAdvancedTextSetting = false;
 export function ExportPrepare({
   setExportState,
   videos,
@@ -81,7 +99,7 @@ export function ExportPrepare({
 
       const progressHub = new EventHub<Progress>();
       const { cancel, result } = await convert(
-        fileMap,
+        filterFileMap(fileMap, view),
         { text: resolvedTextToDraw ? [resolvedTextToDraw, drawTextOptions] : undefined, trim: [trimStartField.value, trimEndField.value] },
         {
           onProgress: progressHub.dispatch,
@@ -94,7 +112,6 @@ export function ExportPrepare({
 
       setExportState({
         state: "processing",
-        totalTime: trimEndField.value - trimStartField.value || undefined,
         cancel,
         onProgress: progressHub.addListener,
       });
@@ -110,10 +127,7 @@ export function ExportPrepare({
 
   return (
     <Box display="flex" flexDirection="column" sx={{ gap: 2 }}>
-      <FormControl>
-        <FormControl.Label>Cameras</FormControl.Label>
-        <Select<CameraOption> sx={{ width: "100%" }} value={view} onChange={(option) => setView(option)} options={cameraOptions} />
-      </FormControl>
+      <FormSelect<CameraOption> sx={{ width: "100%" }} label="Cameras" value={view} onChange={(option) => setView(option)} options={cameraOptions} />
       <FormControl>
         <Checkbox checked={shouldDrawText} onChange={(e) => setShouldDrawText(e.target.checked)} />
         <FormControl.Label>Draw text</FormControl.Label>
@@ -139,35 +153,37 @@ export function ExportPrepare({
                 </FormControl>
               </RadioGroup>
             </Box>
-            <Box mt={2}>
-              <ExpandButton buttonProps={{ children: "Text Style" }}>
-                <Box ml={4} py={1}>
-                  <FormControl>
-                    <FormControl.Label>Font Size</FormControl.Label>
-                    <TextInput type="number" value={fontSizeField.raw ?? ""} onChange={(e) => fontSizeField.setRaw(e.target.value)} />
-                    {fontSizeField.validation && (
-                      <FormControl.Validation variant={fontSizeField.validation.type}>{fontSizeField.validation.message}</FormControl.Validation>
-                    )}
-                  </FormControl>
-                  <FormControl>
-                    <FormControl.Label>Font Color</FormControl.Label>
-                    <input
-                      type="color"
-                      value={drawTextOptions.fontColor ?? ""}
-                      onChange={(e) => setDrawTextOptions({ ...drawTextOptions, fontColor: e.target.value })}
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormControl.Label>Box Color</FormControl.Label>
-                    <input
-                      type="color"
-                      value={drawTextOptions.backgroundColor ?? ""}
-                      onChange={(e) => setDrawTextOptions({ ...drawTextOptions, backgroundColor: e.target.value })}
-                    />
-                  </FormControl>
-                </Box>
-              </ExpandButton>
-            </Box>
+            {showAdvancedTextSetting && (
+              <Box mt={2}>
+                <ExpandButton buttonProps={{ children: "Text Style" }}>
+                  <Box ml={4} py={1}>
+                    <FormControl>
+                      <FormControl.Label>Font Size</FormControl.Label>
+                      <TextInput type="number" value={fontSizeField.raw ?? ""} onChange={(e) => fontSizeField.setRaw(e.target.value)} />
+                      {fontSizeField.validation && (
+                        <FormControl.Validation variant={fontSizeField.validation.type}>{fontSizeField.validation.message}</FormControl.Validation>
+                      )}
+                    </FormControl>
+                    <FormControl>
+                      <FormControl.Label>Font Color</FormControl.Label>
+                      <input
+                        type="color"
+                        value={drawTextOptions.fontColor ?? ""}
+                        onChange={(e) => setDrawTextOptions({ ...drawTextOptions, fontColor: e.target.value })}
+                      />
+                    </FormControl>
+                    <FormControl>
+                      <FormControl.Label>Box Color</FormControl.Label>
+                      <input
+                        type="color"
+                        value={drawTextOptions.backgroundColor ?? ""}
+                        onChange={(e) => setDrawTextOptions({ ...drawTextOptions, backgroundColor: e.target.value })}
+                      />
+                    </FormControl>
+                  </Box>
+                </ExpandButton>
+              </Box>
+            )}
           </FormControl.Caption>
         )}
       </FormControl>

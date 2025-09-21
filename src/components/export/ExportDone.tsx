@@ -17,7 +17,7 @@ export function ExportDone({
   const videoSrc = useMemo(() => URL.createObjectURL(output), [output]);
   return (
     <Box>
-      <video controls autoPlay style={{ width: "100%" }} src={videoSrc} />
+      <video aria-label="Exported video" controls autoPlay style={{ width: "100%" }} src={videoSrc} />
       <Box display="flex" justifyContent="space-between">
         <Button
           onClick={() => {

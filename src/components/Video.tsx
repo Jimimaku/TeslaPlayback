@@ -98,11 +98,6 @@ export const Video = React.forwardRef<Ref, Props>(function Video({ file, label, 
           style={{ width: "100%", ...native?.style }}
         />
       </Box>
-      <Box display="flex" justifyContent="center">
-        <Text as="label" sx={{ color: "fg.neutral" }}>
-          {label}
-        </Text>
-      </Box>
     </Box>
   );
 });
