@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon, ColumnsIcon, PlayIcon, StopwatchIcon, VersionsIcon } from "@primer/octicons-react";
+import { ChevronLeftIcon, ChevronRightIcon, ColumnsIcon, PlayIcon, VersionsIcon } from "@primer/octicons-react";
 import { Box, Checkbox, FormControl, IconButton, Text } from "@primer/react";
 import React, { useEffect, useState } from "react";
 import { Directions, VideoClipGroup } from "../common";
@@ -6,6 +6,7 @@ import { LayoutKey, layoutKeys, useVideosLayout } from "../hooks/useVideosLayout
 import { formatDateTime, formatHMS, shiftTime } from "../utils/general";
 import { DropdownSelect } from "./DropdownSelect";
 import { LayoutComposer } from "./LayoutComposer";
+import { PlaybackRateControl } from "./PlaybackRateControl";
 import { ProgressBar } from "./ProgressBar";
 import { Video, VideoRef } from "./Video";
 import { VideoExporter } from "./export";
@@ -30,6 +31,7 @@ function useVideoControl() {
 }
 
 const showLayoutSelect = false;
+const showPlaybackRateControl = false;
 export function MatrixPlayer({
   eventName,
   baseTime,
@@ -169,19 +171,7 @@ export function MatrixPlayer({
           />
         </Box>
         <Box display="inline-flex" alignItems="center" sx={{ gap: 2 }}>
-          <DropdownSelect
-            title={
-              <>
-                <StopwatchIcon /> {`x${playbackRate}`}
-              </>
-            }
-            options={[0.25, 0.5, 1, 2, 4, 8].map((rate) => ({
-              value: `${rate}`,
-              label: `${rate}`,
-            }))}
-            value={`${playbackRate}`}
-            onChange={(value) => setPlaybackRate(parseFloat(value))}
-          />
+          {showPlaybackRateControl && <PlaybackRateControl playbackRate={playbackRate} setPlaybackRate={setPlaybackRate} />}
           {showLayoutSelect && (
             <DropdownSelect
               title={
