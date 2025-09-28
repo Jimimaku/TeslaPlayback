@@ -1,4 +1,4 @@
-import { Box, CounterLabel, FormControl } from "@primer/react";
+import { Box, CounterLabel } from "@primer/react";
 import { useEffect, useMemo, useState } from "react";
 import { TeslaFS } from "../TeslaFS";
 import { PlaybackEventGroup } from "../common";
@@ -55,13 +55,15 @@ export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
           {availableCategories.length > 0 && (
             <SubNavs options={availableCategories} value={focusedCategory} onChange={(scope) => setFocusedCategory(scope)} />
           )}
-          <Box display={["none", "none", "flex"]} flexWrap={["wrap", "nowrap", "nowrap"]} sx={{ gap: 1 }}>
-            <FormControl>
-              <FormControl.Label>
+          <Box display="flex" flexWrap={["wrap", "nowrap", "nowrap"]} sx={{ gap: 1 }}>
+            <TimestampSelect
+              sx={{ display: ["none", "none", "flex"] }}
+              label={
+                <>
                 Events <CounterLabel>{allEventTimestampsOrdered.length}</CounterLabel>
-              </FormControl.Label>
-              <TimestampSelect
-                sx={{ maxHeight: 600, overflowY: "auto" }}
+                </>
+              }
+              innerSx={{ maxHeight: 600, overflowY: "auto" }}
                 options={allEventTimestampsOrdered}
                 renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp)}
                 value={currentEventTimestamp}
@@ -70,23 +72,8 @@ export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
                   setCurrentEventTimestamp(timestamp);
                 }}
               />
-            </FormControl>
-            <FormControl>
-              <FormControl.Label>
-                Clips of event
-                <CounterLabel>{currentEventTimestamps.length}</CounterLabel>
-              </FormControl.Label>
-              <TimestampSelect
-                sx={{ maxHeight: 600, overflowY: "auto" }}
-                options={currentEventTimestamps}
-                renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp, "time")}
-                value={currentClipsTimestamp}
-                onChange={setCurrentClipsTimestamp}
-              />
-            </FormControl>
-          </Box>
-          <Box display={["flex", "flex", "none"]} flexWrap={["wrap", "nowrap", "nowrap"]} sx={{ gap: 1 }}>
             <FormSelect
+              sx={{ display: ["flex", "flex", "none"] }}
               label={
                 <>
                   Events <CounterLabel>{allEventTimestampsOrdered.length}</CounterLabel>
@@ -100,10 +87,30 @@ export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
                 setCurrentEventTimestamp(timestamp);
               }}
             />
+          </Box>
+        </Box>
+        {/* minWidth for preventing the area grow out of view */}
+        <Box as="main" flex="1" minWidth="0">
+          <TimestampSelect
+            sx={{ display: ["none", "none", "flex"] }}
+            label={
+              <>
+                Clips of event
+                <CounterLabel>{currentEventTimestamps.length}</CounterLabel>
+              </>
+            }
+            innerSx={{ maxHeight: 600, overflowY: "auto" }}
+            options={currentEventTimestamps}
+            renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp, "time")}
+            value={currentClipsTimestamp}
+            onChange={setCurrentClipsTimestamp}
+            />
             <FormSelect
+            sx={{ display: ["flex", "flex", "none"] }}
               label={
                 <>
-                  Clips <CounterLabel>{currentEventTimestamps.length}</CounterLabel>
+                Clips of event
+                <CounterLabel>{currentEventTimestamps.length}</CounterLabel>
                 </>
               }
               options={currentEventTimestamps}
@@ -111,10 +118,6 @@ export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
               value={currentClipsTimestamp}
               onChange={setCurrentClipsTimestamp}
             />
-          </Box>
-        </Box>
-        {/* minWidth for preventing the area grow out of view */}
-        <Box as="main" flex="1" minWidth="0">
           {clipGroup && (
             <MatrixPlayer
               eventName={clipGroup.timestamp}
