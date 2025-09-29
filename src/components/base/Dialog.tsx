@@ -8,7 +8,7 @@ export function Dialog<E extends HTMLElement>({
   title,
   dialogProps,
 }: PropsWithChildren<{
-  trigger: (isOpen: ReactStateIO<boolean>, ref: RefObject<E>) => ReactNode;
+  trigger: (isOpen: ValSet<boolean>, ref: RefObject<E>) => ReactNode;
   title?: ReactNode;
   headerProps?: Partial<DialogHeaderProps>;
   dialogProps?: Partial<DialogProps>;
@@ -18,7 +18,7 @@ export function Dialog<E extends HTMLElement>({
   const returnFocusRef = useRef<E | null>(null);
   return (
     <>
-      {trigger({ get: isOpen, set: setIsOpen }, returnFocusRef)}
+      {trigger({ val: isOpen, set: setIsOpen }, returnFocusRef)}
       {isOpen && (
         <PrimerDialog title={title} onClose={() => setIsOpen(false)} height="large" {...dialogProps}>
           {children}

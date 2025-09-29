@@ -1,9 +1,18 @@
 import { TeslaFS } from "./TeslaFS";
 
-export type Directions = "front" | "left" | "right" | "rear";
-export const directions: Directions[] = ["front", "left", "right", "rear"];
-export type VideoClipGroup = Partial<Record<Directions, File>>;
-export type PlaybackEvent = Record<TeslaFS.Timestamp, VideoClipGroup>;
-export type PlaybackEventGroup = Record<TeslaFS.Timestamp, PlaybackEvent>;
-export type PlaybackMergedEventGroup = Record<TeslaFS.Timestamp, PlaybackEvent>;
-export type PlaybackCategorizedGroup = Record<TeslaFS.ClipCategory, TeslaFS.Timestamp[]>;
+export enum Directions {
+  front = "front",
+  rear = "rear",
+  left = "left",
+  right = "right",
+  leftPillar = "left_pillar",
+  rightPillar = "right_pillar",
+}
+export const directions: Directions[] = Object.values(Directions);
+export type ClipFiles = {
+  [direction in Directions]?: File;
+};
+export type PlaybackEventSlice = [time: Date, files: ClipFiles];
+export type PlaybackEvent = [time: Date, slices: Record<TeslaFS.Timestamp, PlaybackEventSlice>];
+export type PlaybackEvents = Record<TeslaFS.Timestamp, PlaybackEvent>;
+export type ClipCategories = Record<TeslaFS.ClipCategory, PlaybackEvents>;

@@ -1,9 +1,4 @@
-export interface FileMap {
-  front?: File;
-  rear?: File;
-  left?: File;
-  right?: File;
-}
+import { ClipFiles } from "../../common";
 
 export interface ConvertConfig {
   text?: [content: Date | string, style: DrawTextStyle];
@@ -12,7 +7,7 @@ export interface ConvertConfig {
 
 export interface Convert {
   (
-    fileMap: FileMap,
+    fileMap: ClipFiles,
     options: ConvertConfig,
     {
       onProgress,

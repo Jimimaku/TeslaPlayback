@@ -7,8 +7,14 @@ export namespace TeslaFS {
     | `${string}-${string}-${string}_${string}-${string}-${string}` // YYYY-MM-DD_HH-MM-SS
     | `${string}-${string}-${string}_${string}-${string}`; // YYYY-MM-DD_HH-MM
 
-  export const clipCategories = ["RecentClips", "SavedClips", "SentryClips"] as const;
-  export type ClipCategory = ValueOfArray<typeof clipCategories>;
+  export enum ClipCategory {
+    RecentClips = "RecentClips",
+    SavedClips = "SavedClips",
+    SentryClips = "SentryClips",
+    Unknown = "Unknown",
+  }
+
+  export const clipCategories = Object.values(ClipCategory);
 
   export function formatTimestamp(timestamp: TeslaFS.Timestamp, format: "dateTime" | "date" | "time" = "dateTime") {
     const [date, time] = timestamp.split("_").map((part) => part.split("-"));
@@ -22,7 +28,7 @@ export namespace TeslaFS {
     }
   }
 
-  export function parseTimestamp(timestamp: TeslaFS.Timestamp) {
+  export function parseTimestamp(timestamp: TeslaFS.Timestamp): Date {
     const [date, time] = timestamp.split("_").map((part) => part.split("-"));
     return new Date(`${date.join("-")}T${time.join(":")}`);
   }
@@ -34,13 +40,14 @@ export namespace TeslaFS {
     return new Date(`${YYYY}-${mm}-${DD}T${HH}:${MM}:${SS}`);
   };
 
-  export const SUFFIXES = {
-    FRONT: "front",
-    REAR: "back",
-    REAR_VIEW: "rear_view",
-    LEFT_REPEATER: "left_repeater",
-    RIGHT_REPEATER: "right_repeater",
-  } as const;
+  export enum SUFFIXES {
+    FRONT = "front",
+    REAR = "back",
+    LEFT_REPEATER = "left_repeater",
+    RIGHT_REPEATER = "right_repeater",
+    LEFT_PILLAR = "left_pillar",
+    RIGHT_PILLAR = "right_pillar",
+  }
 
   export const VIDEO_FILE_EXT = ".mp4";
 

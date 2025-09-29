@@ -5,15 +5,11 @@ export function formatHMS(seconds: number, forceRender: "h" | "m" = "m") {
   return (forceRender === "h" || h > 0 ? [h, m, s] : forceRender === "m" || m > 0 ? [m, s] : [s]).map((x) => `${x}`.padStart(2, "0")).join(":");
 }
 
-export function run<R>(fn: () => R) {
-  return fn();
-}
+export const $ = <R>(fn: () => R) => fn();
 
-export function getSortedKeys<T extends string, V>(eventGroup: {
-  [key in T]: V;
-}): T[] {
-  return Object.keys(eventGroup).sort() as T[];
-}
+export const keys = <T extends object>(obj: T): (keyof T)[] => Object.keys(obj) as (keyof T)[];
+export const getKeys = <T extends string, V>(obj: { [key in T]: V }): T[] => Object.keys(obj) as T[];
+export const getSortedKeys = <T extends string, V>(obj: { [key in T]: V }): T[] => getKeys(obj).sort();
 
 export const downloadURL = (data: string, fileName: string) => {
   const a = document.createElement("a");
@@ -25,7 +21,7 @@ export const downloadURL = (data: string, fileName: string) => {
   a.remove();
 };
 
-export const getBlob = (data: Uint8Array | ArrayBuffer, mimeType: string): Blob =>
+export const getBlob = (data: ArrayBuffer, mimeType: string): Blob =>
   new Blob([data], {
     type: mimeType,
   });

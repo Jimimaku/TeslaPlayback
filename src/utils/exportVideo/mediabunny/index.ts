@@ -14,6 +14,7 @@ import {
 } from "mediabunny";
 import { getBlob, isNotFalsy } from "../../general";
 import { Convert, ConvertConfig, Progress } from "../convert";
+import { CancelSingal } from "./CancelSingal";
 import { drawTextOverlay } from "./text";
 
 type LoadedTrack = {
@@ -33,7 +34,7 @@ const resolveSource = (source: SourceMeta) => {
   throw new Error("Unsupported source type");
 };
 
-async function loadVideo(sourceMeta: SourceMeta): Promise<LoadedTrack> {
+async function loadVideoTrack(sourceMeta: SourceMeta): Promise<LoadedTrack> {
   const bunnySource = resolveSource(sourceMeta);
   const input = new Input({ source: bunnySource, formats: ALL_FORMATS });
   const duration = await input.computeDuration(); // homepage snippet shows this usage
@@ -60,24 +61,18 @@ function generateLayoutSlots(size: { width: number; height: number }, rowsAmount
   return slots;
 }
 
-async function mediaBunnyConvert({
-  sourcesMeta,
-  onProgress,
-  options: { text, trim } = {},
-}: {
-  sourcesMeta: (SourceMeta | undefined)[];
+type MediaBunnyConvertConfig = {
+  sourcesMeta: SourceMeta[];
   onProgress?: (progress: Progress) => void;
   options?: ConvertConfig;
-}) {
-  let canceled = false;
-  const cancel = () => {
-    canceled = true;
-  };
+};
 
-  // ) Frame loop
-  const getResult = async () => {
+async function mediaBunnyConvert(config: MediaBunnyConvertConfig) {
+  const cancelSignal = new CancelSingal();
+
+  const getResult = async (cancelSignal: CancelSingal, { sourcesMeta, onProgress, options: { text, trim } = {} }: MediaBunnyConvertConfig) => {
     // ) Inputs
-    const inputs = await Promise.all(sourcesMeta.filter(isNotFalsy).map(loadVideo)); // compute duration, get videoTrack
+    const inputs = await Promise.all(sourcesMeta.map(loadVideoTrack));
 
     // ) Timeline: use min duration across the 4 videos
     const fps = 30; // TODO: get from video
@@ -146,8 +141,9 @@ async function mediaBunnyConvert({
     const [firstFrame, finalFrame] = trim?.map((s) => s * fps) ?? [0, frameCount];
     const totalFrames = finalFrame - firstFrame;
 
+    // ) Frame loop
     for (let i = firstFrame; i < finalFrame; i++) {
-      if (canceled) {
+      if (cancelSignal.isCanceled) {
         videoSource.close();
         output.cancel();
         throw new Error("Processing canceled");
@@ -194,12 +190,12 @@ async function mediaBunnyConvert({
     return getBlob(buffer, mime);
   };
 
-  return { result: getResult(), cancel };
+  return { result: getResult(cancelSignal, config), cancel: cancelSignal.cancel };
 }
 
 export const convert: Convert = (inputs, options, { onProgress }) =>
   mediaBunnyConvert({
-    sourcesMeta: [inputs.front, inputs.rear, inputs.left, inputs.right].filter(isNotFalsy),
+    sourcesMeta: [inputs.front, inputs.rear, inputs.left, inputs.right, inputs.left_pillar, inputs.right_pillar].filter(isNotFalsy),
     onProgress,
     options,
   });

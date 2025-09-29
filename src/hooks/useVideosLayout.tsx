@@ -1,4 +1,5 @@
 import { CSSProperties, useMemo } from "react";
+import { keys } from "../utils/general";
 
 type LayoutMap<Key extends string> = Record<
   Key,
@@ -21,10 +22,18 @@ const layouts = {
     [0, 1, 1, 1],
     [1, 1, 1, 1],
   ],
+  ["2/2/2"]: [
+    [0, 0, 1, 1],
+    [1, 0, 1, 1],
+    [2, 0, 1, 1],
+    [0, 1, 1, 1],
+    [1, 1, 1, 1],
+    [2, 1, 1, 1],
+  ],
 };
 
 export type LayoutKey = keyof typeof layouts;
-export const layoutKeys = Object.keys(layouts) as LayoutKey[];
+export const layoutKeys = keys(layouts) as LayoutKey[];
 
 function generateLayoutMaps<Key extends string>(raw: Record<Key, number[][]>, aspectRatio: number): LayoutMap<Key> {
   return Object.entries(raw).reduce((merged, [key, layout]) => {

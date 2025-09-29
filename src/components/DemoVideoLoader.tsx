@@ -1,6 +1,6 @@
 import { Box, Button, Text } from "@primer/react";
 import { useEffect, useState } from "react";
-import { dataURLtoFile, run } from "../utils/general";
+import { $, dataURLtoFile } from "../utils/general";
 
 const loadDemoVideoFile = (videoUrl: string, filePath: string): Promise<File> =>
   Promise.resolve(
@@ -24,6 +24,8 @@ const demoFileLoaders: DemoFileLoader[] = [
   () => import("../../demo/2024-04-16_10-10-22-left_repeater.mp4").then((m) => loadDemoVideoFile(m.default, "2024-04-16_10-10-22-left_repeater.mp4")),
   () =>
     import("../../demo/2024-04-16_10-10-22-right_repeater.mp4").then((m) => loadDemoVideoFile(m.default, "2024-04-16_10-10-22-right_repeater.mp4")),
+  () => import("../../demo/2024-04-16_10-10-22-left_repeater.mp4").then((m) => loadDemoVideoFile(m.default, "2024-04-16_10-10-22-left_pillar.mp4")),
+  () => import("../../demo/2024-04-16_10-10-22-right_repeater.mp4").then((m) => loadDemoVideoFile(m.default, "2024-04-16_10-10-22-right_pillar.mp4")),
 ];
 
 export function DemoVideoLoader({ setFileList }: { setFileList: (fileList: FileListLike) => void }) {
@@ -35,7 +37,7 @@ export function DemoVideoLoader({ setFileList }: { setFileList: (fileList: FileL
     const cancel = () => {
       aborted = true;
     };
-    run(async () => {
+    $(async () => {
       try {
         setError(null);
         const fileList = await Promise.all(

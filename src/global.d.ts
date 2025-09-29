@@ -1,17 +1,22 @@
 /// <reference lib="react" />
 
-type Option<T> = { value: T; label: React.ReactNode };
+type Option<T> = { value: T; label: React.ReactNode; disabled?: boolean };
 
 type IO<T, V = T> = {
   value: V;
   onChange: (value: T) => void;
 };
 
+type ValSet<T> = {
+  val: T;
+  set: (value: T) => void;
+};
+
 type NonConflictJoin<Target, Source> = Target & Omit<Source, keyof Target>;
 
 type ReactSet<T> = React.Dispatch<React.SetStateAction<T>>;
 
-type ReactStateIO<T> = { get: T; set: ReactSet<T> };
+type ReactStateVS<T> = { val: T; set: ReactSet<T> };
 
 type ValueOf<T> = T[keyof T];
 type ValueOfArray<T extends any[] | readonly any[]> = T[number];

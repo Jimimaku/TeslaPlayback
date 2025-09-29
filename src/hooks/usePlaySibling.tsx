@@ -1,33 +1,20 @@
-import React from "react";
-import { PlaybackEventGroup } from "../common";
+import { useMemo } from "react";
+import { PlaybackEvent } from "../common";
 import { getSortedKeys } from "../utils/general";
 
-export function usePlaySibling(
-  eventGroup: PlaybackEventGroup,
-  currentEventTimestamp: string | null,
-  setCurrentEventTimestamp: ReactSet<string | null>,
-  currentClipsTimestamp: string | null,
-  setCurrentTimestamp: ReactSet<string | null>
-) {
-  const allEventTimestampsOrdered = React.useMemo(() => getSortedKeys(eventGroup), [eventGroup]);
-  const currentEventTimestamps = React.useMemo(() => {
-    const currentEvent = currentEventTimestamp ? eventGroup[currentEventTimestamp] : null;
-    return currentEvent ? getSortedKeys(currentEvent) : [];
-  }, [eventGroup, currentEventTimestamp]);
-  return React.useMemo(() => {
-    if (currentClipsTimestamp === null || currentEventTimestamp === null) return;
+export function usePlaySibling(event: PlaybackEvent, sliceTimestamp: string | null, setSliceTimestamp: ReactSet<string | null>) {
+  const [, files] = event;
+  const currentEventTimestamps = useMemo(() => getSortedKeys(files), [files]);
+  return useMemo(() => {
+    if (sliceTimestamp === null) return;
 
-    const currentClipIndex = currentEventTimestamps.indexOf(currentClipsTimestamp);
-    const currentEventIndex = allEventTimestampsOrdered.indexOf(currentEventTimestamp);
+    const currentClipIndex = currentEventTimestamps.indexOf(sliceTimestamp);
 
-    if (currentClipIndex === -1 || currentEventIndex === -1) return;
+    if (currentClipIndex === -1) return;
 
     return (clipOffset: number) => {
-      const goTo = (eventIndex: number, clipIndex: number): void => {
-        const targetEventTimestamp: string | undefined = allEventTimestampsOrdered[eventIndex];
-        if (!targetEventTimestamp) return;
-
-        const targetEventTimestamps = getSortedKeys(eventGroup[targetEventTimestamp]);
+      const goTo = (sliceIndex: number): void => {
+        const targetEventTimestamps = getSortedKeys(files);
 
         // Resolve relative `clipIndex`
         // For example, if every event has 2 clips, then
@@ -35,32 +22,23 @@ export function usePlaySibling(
         //   goTo(2, -3) => goTo(1, -1) => goTo(0, 1) => set
         //   goTo(2, 3) => goTo(3, 1) => set
         //   goTo(0, -1) => fail
-        if (clipIndex < 0) {
-          const fixedIndex = clipIndex + targetEventTimestamps.length;
-          if (fixedIndex < 0) return goTo(eventIndex - 1, fixedIndex);
-          else clipIndex = fixedIndex;
-        } else if (clipIndex > targetEventTimestamps.length - 1) {
-          const fixedIndex = clipIndex - targetEventTimestamps.length;
-          return goTo(eventIndex + 1, fixedIndex);
+        if (sliceIndex < 0) {
+          const fixedIndex = sliceIndex + targetEventTimestamps.length;
+          if (fixedIndex < 0) return goTo(fixedIndex);
+          else sliceIndex = fixedIndex;
+        } else if (sliceIndex > targetEventTimestamps.length - 1) {
+          const fixedIndex = sliceIndex - targetEventTimestamps.length;
+          return goTo(fixedIndex);
         }
-        const targetClipTimestamp = targetEventTimestamps[clipIndex];
+        const targetClipTimestamp = targetEventTimestamps[sliceIndex];
 
-        if (targetEventTimestamp !== currentEventTimestamp) setCurrentEventTimestamp(targetEventTimestamp);
-        if (targetClipTimestamp !== currentClipsTimestamp) setCurrentTimestamp(targetClipTimestamp);
+        if (targetClipTimestamp !== sliceTimestamp) setSliceTimestamp(targetClipTimestamp);
       };
 
       // for the first run, adjust eventIndex if clipIndex is negative
       const targetClipIndex = currentClipIndex + clipOffset;
-      if (targetClipIndex < 0) goTo(currentEventIndex - 1, targetClipIndex);
-      else goTo(currentEventIndex, targetClipIndex);
+      if (targetClipIndex < 0) goTo(targetClipIndex);
+      else goTo(targetClipIndex);
     };
-  }, [
-    eventGroup,
-    currentClipsTimestamp,
-    currentEventTimestamp,
-    currentEventTimestamps,
-    allEventTimestampsOrdered,
-    setCurrentEventTimestamp,
-    setCurrentTimestamp,
-  ]);
+  }, [files, sliceTimestamp, currentEventTimestamps, setSliceTimestamp]);
 }

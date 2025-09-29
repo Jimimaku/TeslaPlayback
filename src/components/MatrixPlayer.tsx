@@ -1,18 +1,18 @@
 import { ChevronLeftIcon, ChevronRightIcon, ColumnsIcon, PlayIcon, VersionsIcon } from "@primer/octicons-react";
 import { Box, Checkbox, FormControl, IconButton, Text } from "@primer/react";
-import React, { useEffect, useState } from "react";
-import { Directions, VideoClipGroup } from "../common";
+import { cloneElement, FC, SyntheticEvent, useEffect, useMemo, useRef, useState } from "react";
+import { directions, Directions, PlaybackEventSlice } from "../common";
 import { LayoutKey, layoutKeys, useVideosLayout } from "../hooks/useVideosLayout";
 import { formatDateTime, formatHMS, shiftTime } from "../utils/general";
 import { DropdownSelect } from "./DropdownSelect";
+import { VideoExporter } from "./export";
 import { LayoutComposer } from "./LayoutComposer";
 import { PlaybackRateControl } from "./PlaybackRateControl";
 import { ProgressBar } from "./ProgressBar";
 import { Video, VideoRef } from "./Video";
-import { VideoExporter } from "./export";
 
 function useVideoControl() {
-  const ref = React.useRef<VideoRef | null>(null);
+  const ref = useRef<VideoRef | null>(null);
   const [canPlay, setCanPlay] = useState(false);
   const [playEnded, setPlayEnded] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -30,19 +30,23 @@ function useVideoControl() {
   };
 }
 
+const videoLayouts = {
+  legacy: [Directions.front, Directions.rear, Directions.left, Directions.right],
+  hw4: [Directions.left, Directions.front, Directions.right, Directions.leftPillar, Directions.rear, Directions.rightPillar],
+};
+
 const showLayoutSelect = false;
+const showPlayModeControl = false;
 const showPlaybackRateControl = false;
-export function MatrixPlayer({
-  eventName,
-  baseTime,
-  videos,
-  playSibling,
-}: {
-  eventName: string;
-  baseTime: Date;
-  videos: VideoClipGroup;
+
+export const MatrixPlayer: FC<{
+  clips: PlaybackEventSlice;
   playSibling?: (offset: 1 | -1) => void;
-}) {
+}> = ({ clips, playSibling }) => {
+  const [baseTime, videos] = clips;
+  const isHW4VideoLayout = !!(videos.left_pillar ?? videos.right_pillar);
+  const videoLayout = isHW4VideoLayout ? videoLayouts.hw4 : videoLayouts.legacy;
+
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [isAutoPlay, setIsAutoPlay] = useState<boolean>(isPlaying); // should equal on initial
   const [playbackRate, setPlaybackRate] = useState<number>(1);
@@ -56,18 +60,19 @@ export function MatrixPlayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [controlledProgress]);
 
-  const [layoutKey, setLayoutKey] = useState<LayoutKey>("2/2");
+  const desiredLayoutKey: LayoutKey = isHW4VideoLayout ? "2/2/2" : "2/2";
+  const [layoutKey, setLayoutKey] = useState<LayoutKey>(desiredLayoutKey);
+  useEffect(() => {
+    if (layoutKey !== desiredLayoutKey) setLayoutKey(desiredLayoutKey);
+  }, [layoutKey, desiredLayoutKey]);
   const layout = useVideosLayout(layoutKey, 3 / 4);
 
-  const controls: Record<Directions, ReturnType<typeof useVideoControl>> = {
-    front: useVideoControl(),
-    rear: useVideoControl(),
-    left: useVideoControl(),
-    right: useVideoControl(),
-  };
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const controls = Object.fromEntries(directions.map((d) => [d, useVideoControl()])) as Record<Directions, ReturnType<typeof useVideoControl>>;
+  const controlArray = directions.map((d) => controls[d]);
 
   // start playing on all can play
-  const allReady = [controls.front.canPlay, controls.rear.canPlay, controls.left.canPlay, controls.right.canPlay].every(Boolean);
+  const allReady = controlArray.every((c) => c.canPlay);
   useEffect(() => {
     if (allReady) {
       setIsPlaying(isAutoPlay);
@@ -76,7 +81,7 @@ export function MatrixPlayer({
   }, [allReady]);
 
   // stop play on all ends
-  const anyPlayEnds = [controls.front.playEnded, controls.rear.playEnded, controls.left.playEnded, controls.right.playEnded].some(Boolean);
+  const anyPlayEnds = controlArray.some((c) => c.playEnded);
   useEffect(() => {
     if (anyPlayEnds) {
       if (isPlaying && isAutoPlay) {
@@ -88,16 +93,17 @@ export function MatrixPlayer({
   }, [anyPlayEnds]);
 
   const [playtime, setPlaytime] = useState(0);
+  const playtimeArray = controlArray.map((c) => c.playtime);
   useEffect(() => {
-    if ([controls.front.playtime, controls.rear.playtime, controls.left.playtime, controls.right.playtime].some(Boolean)) {
-      setPlaytime(Math.max(controls.front.playtime, controls.rear.playtime, controls.left.playtime, controls.right.playtime));
+    if (playtimeArray.some(Boolean)) {
+      setPlaytime(Math.max(...playtimeArray));
     }
-  }, [controls.front.playtime, controls.rear.playtime, controls.left.playtime, controls.right.playtime]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, playtimeArray);
 
-  const duration = React.useMemo(
-    () => Math.max(controls.front.duration, controls.rear.duration, controls.left.duration, controls.right.duration) || 0,
-    [controls.front.duration, controls.rear.duration, controls.left.duration, controls.right.duration]
-  );
+  const durationArray = controlArray.map((c) => c.duration);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const duration = useMemo(() => Math.max(...durationArray) || 0, durationArray);
   useEffect(() => {
     setProgressBarValue(playtime / (duration ?? 1));
   }, [playtime, duration]);
@@ -109,7 +115,7 @@ export function MatrixPlayer({
     setProgressBarValue(0);
   };
 
-  const shouldContinuePlayingOnDragEnd = React.useRef(false);
+  const shouldContinuePlayingOnDragEnd = useRef(false);
 
   const getVideoProps = (control: ReturnType<typeof useVideoControl>) => ({
     play: isPlaying,
@@ -118,11 +124,11 @@ export function MatrixPlayer({
     native: {
       autoPlay: isAutoPlay,
       onEnded: () => control.setPlayEnded(true),
-      onCanPlay: (e: React.SyntheticEvent<HTMLVideoElement>) => {
+      onCanPlay: (e: SyntheticEvent<HTMLVideoElement>) => {
         control.setCanPlay(true);
         control.setDuration(e.currentTarget.duration);
       },
-      onTimeUpdate: (e: React.SyntheticEvent<HTMLVideoElement>) => {
+      onTimeUpdate: (e: SyntheticEvent<HTMLVideoElement>) => {
         const video = e.currentTarget;
         if (video) {
           if (video.readyState >= video.HAVE_METADATA) {
@@ -173,7 +179,7 @@ export function MatrixPlayer({
         <Box display="inline-flex" alignItems="center" sx={{ gap: 2 }}>
           {showPlaybackRateControl && <PlaybackRateControl playbackRate={playbackRate} setPlaybackRate={setPlaybackRate} />}
           {showLayoutSelect && (
-            <DropdownSelect
+            <DropdownSelect<LayoutKey>
               title={
                 <>
                   <VersionsIcon /> {layoutKey}
@@ -187,10 +193,12 @@ export function MatrixPlayer({
               onChange={setLayoutKey}
             />
           )}
-          <FormControl sx={{ alignItems: "center" }}>
-            <Checkbox checked={isAutoPlay} onChange={() => setIsAutoPlay(!isAutoPlay)} />
-            <FormControl.Label sx={{ whiteSpace: "nowrap" }}>Auto Play</FormControl.Label>
-          </FormControl>
+          {showPlayModeControl && (
+            <FormControl sx={{ alignItems: "center" }}>
+              <Checkbox checked={isAutoPlay} onChange={() => setIsAutoPlay(!isAutoPlay)} />
+              <FormControl.Label sx={{ whiteSpace: "nowrap" }}>Auto Play</FormControl.Label>
+            </FormControl>
+          )}
         </Box>
       </Box>
       <Box bg="neutral.muted" position="relative" borderWidth={1} borderStyle="solid" borderColor="border.default" borderRadius={4}>
@@ -203,7 +211,7 @@ export function MatrixPlayer({
           <LayoutComposer
             style={layout.container}
             decorator={(index, element) =>
-              React.cloneElement(element, {
+              cloneElement(element, {
                 ...element.props,
                 style: {
                   ...element.props.style,
@@ -212,26 +220,18 @@ export function MatrixPlayer({
               })
             }
           >
-            <div>
-              <Video label={"camera-view-front"} ref={controls.front.ref} file={videos.front} {...getVideoProps(controls.front)} />
-            </div>
-            <div>
-              <Video label={"camera-view-rear"} ref={controls.rear.ref} file={videos.rear} {...getVideoProps(controls.rear)} />
-            </div>
-            <div>
-              <Video label={"camera-view-left"} ref={controls.left.ref} file={videos.left} {...getVideoProps(controls.left)} />
-            </div>
-            <div>
-              <Video label={"camera-view-right"} ref={controls.right.ref} file={videos.right} {...getVideoProps(controls.right)} />
-            </div>
+            {videoLayout.map((d) => (
+              <div key={d}>
+                <Video label={`camera-view-${d}`} ref={controls[d].ref} file={videos[d]} {...getVideoProps(controls[d])} />
+              </div>
+            ))}
           </LayoutComposer>
         </Box>
       </Box>
       <Box>
         <VideoExporter
-          eventName={eventName}
           totalTime={duration}
-          videos={videos}
+          clips={clips}
           videoPlayControl={{
             pause: () => setIsPlaying(false),
           }}
@@ -239,4 +239,4 @@ export function MatrixPlayer({
       </Box>
     </Box>
   );
-}
+};

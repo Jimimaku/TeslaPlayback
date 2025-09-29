@@ -1,60 +1,50 @@
 import { Box, Button, Checkbox, FormControl, Radio, RadioGroup, Text, TextInput } from "@primer/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ExportState } from ".";
-import { TeslaFS } from "../../TeslaFS";
-import { Directions, VideoClipGroup } from "../../common";
+import { ClipFiles, Directions, PlaybackEventSlice } from "../../common";
 import { EventHub } from "../../utils/EventHub";
-import { Convert, DrawTextStyle, FileMap, loadConverter, Progress } from "../../utils/exportVideo/convert";
-import { entries } from "../../utils/general";
+import { DrawTextStyle, loadConverter, Progress } from "../../utils/exportVideo/convert";
+import { FormCheckboxGroup } from "../base/CheckboxGroup";
 import { ExpandButton } from "../base/ExpandButton";
-import { FormSelect } from "../base/Select";
 import { useNumberField } from "./useNumberField";
 
-type CameraOption = Directions | "all";
+type CameraOption = Directions;
 const cameraOptions: Option<CameraOption>[] = [
-  { value: "front", label: "Front" },
-  { value: "rear", label: "Rear" },
-  { value: "left", label: "Left" },
-  { value: "right", label: "Right" },
-  { value: "all", label: "Grid (2×2)" },
+  { value: Directions.front, label: "Front" },
+  { value: Directions.rear, label: "Rear" },
+  { value: Directions.left, label: "Left" },
+  { value: Directions.right, label: "Right" },
+  { value: Directions.leftPillar, label: "Left Pillar" },
+  { value: Directions.rightPillar, label: "Right Pillar" },
 ];
 
-const filterFileMap = (fileMap: FileMap, view: CameraOption): FileMap => {
-  switch (view) {
-    case "front":
-      return { front: fileMap.front };
-    case "rear":
-      return { rear: fileMap.rear };
-    case "left":
-      return { left: fileMap.left };
-    case "right":
-      return { right: fileMap.right };
-    case "all":
-      return fileMap;
-    default:
-      throw new Error("Invalid view");
+const filterFileMap = (fileMap: ClipFiles, views: CameraOption[]): ClipFiles => {
+  const filtered: ClipFiles = {};
+  for (const view of views) {
+    filtered[view] = fileMap[view];
   }
+  return filtered;
 };
 
+const showDrawTextSettings = false;
 const showAdvancedTextSetting = false;
 export function ExportPrepare({
   setExportState,
-  videos,
   totalTime,
+  clips: [eventDate, videos],
 }: {
   setExportState: (state: ExportState) => void;
-  videos: VideoClipGroup;
   totalTime?: number;
+  clips: PlaybackEventSlice;
 }) {
-  const [view, setView] = useState<CameraOption>("front");
-  const fileMap = useMemo(() => {
-    const { front, rear, left, right } = videos;
-    if (view === "all") {
-      if (front || rear || left || right) return { front, rear, left, right };
-    } else if (videos[view]) {
-      return { [view]: videos[view] } satisfies Partial<Record<Directions, File | undefined>>;
-    }
-  }, [view, videos]);
+  const [views, setViews] = useState<CameraOption[]>([
+    Directions.front,
+    Directions.rear,
+    Directions.left,
+    Directions.right,
+    Directions.leftPillar,
+    Directions.rightPillar,
+  ]);
 
   const [textToDraw, setTextToDraw] = useState("");
   const [shouldDrawText, setShouldDrawText] = useState(true);
@@ -75,32 +65,17 @@ export function ExportPrepare({
   const trimStartField = useNumberField(0);
   const trimEndField = useNumberField(totalTime ? Math.floor(totalTime + 1) : 60);
 
-  const resolvedTextToDraw = useMemo(() => {
-    if (!fileMap) return undefined;
+  const allFieldsValid = trimStartField.validation === null && trimEndField.validation === null && fontSizeField.validation === null;
 
-    if (drawTextMode === "timestamp") {
-      return entries(fileMap).reduce(
-        (acc, [, file]) => acc ?? (file ? TeslaFS.parseFileNameDate(file.name) : undefined),
-        undefined as Date | undefined
-      );
-    } else {
-      return textToDraw;
-    }
-  }, [drawTextMode, textToDraw, fileMap]);
-
-  const allFieldsValid =
-    !!fileMap && trimStartField.validation === null && trimEndField.validation === null && (!shouldDrawText || fontSizeField.validation === null);
-
-  const autoConvert = async (convert: Convert) => {
+  const startConvert = async () => {
     try {
-      if (fileMap === undefined) throw new Error("No video available");
-
       setExportState({ state: "loadingConverter" });
 
       const progressHub = new EventHub<Progress>();
+      const convert = await loadConverter();
       const { cancel, result } = await convert(
-        filterFileMap(fileMap, view),
-        { text: resolvedTextToDraw ? [resolvedTextToDraw, drawTextOptions] : undefined, trim: [trimStartField.value, trimEndField.value] },
+        filterFileMap(videos, views),
+        { text: eventDate ? [eventDate, drawTextOptions] : undefined, trim: [trimStartField.value, trimEndField.value] },
         {
           onProgress: progressHub.dispatch,
           onError: (error) => {
@@ -123,70 +98,75 @@ export function ExportPrepare({
     }
   };
 
-  const startConvert = async () => autoConvert(await loadConverter());
-
   return (
     <Box display="flex" flexDirection="column" sx={{ gap: 2 }}>
-      <FormSelect<CameraOption> sx={{ width: "100%" }} label="Cameras" value={view} onChange={(option) => setView(option)} options={cameraOptions} />
-      <FormControl>
-        <Checkbox checked={shouldDrawText} onChange={(e) => setShouldDrawText(e.target.checked)} />
-        <FormControl.Label>Draw text</FormControl.Label>
-        {shouldDrawText && (
-          <FormControl.Caption>
-            <Box>
-              <RadioGroup name="drawTextMode" onChange={(v) => setDrawTextMode(v as typeof drawTextMode)}>
-                <RadioGroup.Label>Text content</RadioGroup.Label>
-                <FormControl>
-                  <Radio value="timestamp" checked={drawTextMode === "timestamp"} />
-                  <FormControl.Label>Timestamp</FormControl.Label>
-                  <FormControl.Caption>e.g. 2077-01-01 11:22:33</FormControl.Caption>
-                </FormControl>
-                <FormControl>
-                  <Radio value="custom" checked={drawTextMode === "custom"} />
-                  <FormControl.Label>Custom</FormControl.Label>
-                  <FormControl.Caption>
-                    <FormControl disabled={drawTextMode !== "custom"}>
-                      <FormControl.Label visuallyHidden>Text to draw</FormControl.Label>
-                      <TextInput placeholder="Text to draw" value={textToDraw} onChange={(e) => setTextToDraw(e.target.value)} />
-                    </FormControl>
-                  </FormControl.Caption>
-                </FormControl>
-              </RadioGroup>
-            </Box>
-            {showAdvancedTextSetting && (
-              <Box mt={2}>
-                <ExpandButton buttonProps={{ children: "Text Style" }}>
-                  <Box ml={4} py={1}>
-                    <FormControl>
-                      <FormControl.Label>Font Size</FormControl.Label>
-                      <TextInput type="number" value={fontSizeField.raw ?? ""} onChange={(e) => fontSizeField.setRaw(e.target.value)} />
-                      {fontSizeField.validation && (
-                        <FormControl.Validation variant={fontSizeField.validation.type}>{fontSizeField.validation.message}</FormControl.Validation>
-                      )}
-                    </FormControl>
-                    <FormControl>
-                      <FormControl.Label>Font Color</FormControl.Label>
-                      <input
-                        type="color"
-                        value={drawTextOptions.fontColor ?? ""}
-                        onChange={(e) => setDrawTextOptions({ ...drawTextOptions, fontColor: e.target.value })}
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <FormControl.Label>Box Color</FormControl.Label>
-                      <input
-                        type="color"
-                        value={drawTextOptions.backgroundColor ?? ""}
-                        onChange={(e) => setDrawTextOptions({ ...drawTextOptions, backgroundColor: e.target.value })}
-                      />
-                    </FormControl>
-                  </Box>
-                </ExpandButton>
+      <FormCheckboxGroup<CameraOption>
+        label="Cameras"
+        value={views}
+        onChange={setViews}
+        options={cameraOptions.map((option) => (videos[option.value] ? option : { ...option, disabled: true }))}
+      />
+      {showDrawTextSettings && (
+        <FormControl>
+          <Checkbox checked={shouldDrawText} onChange={(e) => setShouldDrawText(e.target.checked)} />
+          <FormControl.Label>Draw text</FormControl.Label>
+          {shouldDrawText && (
+            <FormControl.Caption>
+              <Box>
+                <RadioGroup name="drawTextMode" onChange={(v) => setDrawTextMode(v as typeof drawTextMode)}>
+                  <RadioGroup.Label>Text content</RadioGroup.Label>
+                  <FormControl>
+                    <Radio value="timestamp" checked={drawTextMode === "timestamp"} />
+                    <FormControl.Label>Timestamp</FormControl.Label>
+                    <FormControl.Caption>e.g. 2077-01-01 11:22:33</FormControl.Caption>
+                  </FormControl>
+                  <FormControl>
+                    <Radio value="custom" checked={drawTextMode === "custom"} />
+                    <FormControl.Label>Custom</FormControl.Label>
+                    <FormControl.Caption>
+                      <FormControl disabled={drawTextMode !== "custom"}>
+                        <FormControl.Label visuallyHidden>Text to draw</FormControl.Label>
+                        <TextInput placeholder="Text to draw" value={textToDraw} onChange={(e) => setTextToDraw(e.target.value)} />
+                      </FormControl>
+                    </FormControl.Caption>
+                  </FormControl>
+                </RadioGroup>
               </Box>
-            )}
-          </FormControl.Caption>
-        )}
-      </FormControl>
+              {showAdvancedTextSetting && (
+                <Box mt={2}>
+                  <ExpandButton buttonProps={{ children: "Text Style" }}>
+                    <Box ml={4} py={1}>
+                      <FormControl>
+                        <FormControl.Label>Font Size</FormControl.Label>
+                        <TextInput type="number" value={fontSizeField.raw ?? ""} onChange={(e) => fontSizeField.setRaw(e.target.value)} />
+                        {fontSizeField.validation && (
+                          <FormControl.Validation variant={fontSizeField.validation.type}>{fontSizeField.validation.message}</FormControl.Validation>
+                        )}
+                      </FormControl>
+                      <FormControl>
+                        <FormControl.Label>Font Color</FormControl.Label>
+                        <input
+                          type="color"
+                          value={drawTextOptions.fontColor ?? ""}
+                          onChange={(e) => setDrawTextOptions({ ...drawTextOptions, fontColor: e.target.value })}
+                        />
+                      </FormControl>
+                      <FormControl>
+                        <FormControl.Label>Box Color</FormControl.Label>
+                        <input
+                          type="color"
+                          value={drawTextOptions.backgroundColor ?? ""}
+                          onChange={(e) => setDrawTextOptions({ ...drawTextOptions, backgroundColor: e.target.value })}
+                        />
+                      </FormControl>
+                    </Box>
+                  </ExpandButton>
+                </Box>
+              )}
+            </FormControl.Caption>
+          )}
+        </FormControl>
+      )}
       <Box display="flex" sx={{ gap: 2 }}>
         <FormControl disabled={!totalTime}>
           <FormControl.Label>Trim Start</FormControl.Label>
@@ -222,11 +202,7 @@ export function ExportPrepare({
         Start
       </Button>
       <Text as="label" color="neutral.emphasis" fontSize={1}>
-        Exporting does not upload your videos.
-      </Text>
-      <Text as="label" color="neutral.emphasis" fontSize={1}>
-        It will take 3~20 minutes to process the video, depends on your computer's performance. You can reduce the time by reduce video duration with
-        Trim Start and Trim End.
+        Exporting does not upload your videos, all process is done locally in your browser.
       </Text>
     </Box>
   );

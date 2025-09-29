@@ -1,8 +1,8 @@
 import { Box, Button, Text } from "@primer/react";
 import { memo, useState } from "react";
-import { VideoClipGroup } from "../../common";
+import { PlaybackEventSlice } from "../../common";
 import { Progress } from "../../utils/exportVideo/convert";
-import { run } from "../../utils/general";
+import { $ } from "../../utils/general";
 import { Dialog } from "../base/Dialog";
 import { ExportDone } from "./ExportDone";
 import { ExportFail } from "./ExportFail";
@@ -32,14 +32,12 @@ export type ExportStateFail = {
 export type ExportState = ExportStateIdle | ExportStateLoadingConverter | ExportStateProcessing | ExportStateDone | ExportStateFail;
 
 export const VideoExporter = memo(function VideoExporter({
-  eventName,
   totalTime,
-  videos,
+  clips,
   videoPlayControl,
 }: {
-  eventName: string;
   totalTime: number;
-  videos: VideoClipGroup;
+  clips: PlaybackEventSlice;
   videoPlayControl?: {
     play?: () => void;
     pause?: () => void;
@@ -52,6 +50,8 @@ export const VideoExporter = memo(function VideoExporter({
   const [exportState, setExportState] = useState<ExportState>({
     state: "idle",
   });
+  const [eventDate] = clips;
+  const eventName = eventDate.toLocaleString();
 
   return (
     <Dialog<HTMLButtonElement>
@@ -77,9 +77,9 @@ export const VideoExporter = memo(function VideoExporter({
           exportState.state === "idle" ? undefined : "none"
         }
       >
-        <ExportPrepare videos={videos} totalTime={totalTime} setExportState={setExportState} />
+        <ExportPrepare clips={clips} totalTime={totalTime} setExportState={setExportState} />
       </Box>
-      {run(() => {
+      {$(() => {
         switch (exportState.state) {
           case "loadingConverter":
             return <Text>Loading plugins for exporting video...</Text>;

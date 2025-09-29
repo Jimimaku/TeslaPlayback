@@ -1,6 +1,6 @@
 import { TeslaFS } from "../../TeslaFS";
 import { ClipCategories, Directions, PlaybackEvents } from "../../common";
-import { keys } from "../keys";
+import { keys } from "../general";
 
 const suffixToDirectionMap: Record<ValueOf<typeof TeslaFS.SUFFIXES>, Directions> = {
   [TeslaFS.SUFFIXES.FRONT]: Directions.front,
@@ -13,12 +13,12 @@ const suffixToDirectionMap: Record<ValueOf<typeof TeslaFS.SUFFIXES>, Directions>
 
 const findTimestamp = (str?: string): TeslaFS.Timestamp | undefined => str?.match(/\d{4}-\d{2}-\d{2}_\d{2}-\d{2}(-\d{2})?/)?.[0];
 
-export function processDashCamFiles(files: FileListLike): { categorizedGroups: ClipCategories; parserLog: { file: File; message: string }[] } {
-  const clipCategories: ClipCategories = {
-    RecentClips: {},
-    SavedClips: {},
-    SentryClips: {},
-    unknown: {},
+export function processDashCamFiles(files: FileListLike): { categories: ClipCategories; parserLog: { file: File; message: string }[] } {
+  const categories: ClipCategories = {
+    [TeslaFS.ClipCategory.RecentClips]: {},
+    [TeslaFS.ClipCategory.SavedClips]: {},
+    [TeslaFS.ClipCategory.SentryClips]: {},
+    [TeslaFS.ClipCategory.Unknown]: {},
   };
   const parserLog: { file: File; message: string }[] = [];
   for (const file of files) {
@@ -44,8 +44,9 @@ export function processDashCamFiles(files: FileListLike): { categorizedGroups: C
 
     const eventTime = TeslaFS.parseTimestamp(eventTimestamp);
 
-    const category: keyof ClipCategories = TeslaFS.clipCategories.find((category) => splitDirectories.includes(category)) ?? "unknown";
-    const playbackEvent: PlaybackEvents = clipCategories[category];
+    const category: TeslaFS.ClipCategory =
+      TeslaFS.clipCategories.find((category) => splitDirectories.includes(category)) ?? TeslaFS.ClipCategory.Unknown;
+    const playbackEvent: PlaybackEvents = categories[category];
     const [, playbackEventClips] = (playbackEvent[eventTimestamp] ??= [eventTime, {}]);
 
     const match = keys(suffixToDirectionMap).find((suffix) => filename.includes(suffix));
@@ -70,7 +71,7 @@ export function processDashCamFiles(files: FileListLike): { categorizedGroups: C
   }
 
   return {
-    categorizedGroups: clipCategories,
+    categories,
     parserLog,
   };
 }

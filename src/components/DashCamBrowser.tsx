@@ -1,131 +1,76 @@
 import { Box, CounterLabel } from "@primer/react";
+import { pipe } from "ramda";
 import { useEffect, useMemo, useState } from "react";
 import { TeslaFS } from "../TeslaFS";
-import { PlaybackEventGroup } from "../common";
-import { useCurrentEventClips } from "../hooks/useCurrentClipTimestamp";
+import { PlaybackEvents } from "../common";
 import { useCurrentEvent } from "../hooks/useCurrentEvent";
-import { usePlaySibling } from "../hooks/usePlaySibling";
 import { getSortedKeys } from "../utils/general";
 import { processDashCamFiles } from "../utils/teslaFileSystem/processDashCamFiles";
-import { MatrixPlayer } from "./MatrixPlayer";
+import { EventPlayer } from "./EventPlayer";
 import { ParserLogViewer } from "./ParserLogViewer";
 import { SubNavs } from "./SubNavs";
 import { TimestampSelect } from "./TimestampSelect";
 import { FormSelect } from "./base/Select";
 
 export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
-  const { categorizedGroups, parserLog } = useMemo(() => processDashCamFiles(fileList), [fileList]);
-  const availableCategories = useMemo(() => TeslaFS.clipCategories.filter((scope) => !!categorizedGroups[scope]?.length), [categorizedGroups]);
-  const [focusedCategory, setFocusedCategory] = useState<TeslaFS.ClipCategory | null>(null);
+  // files -> categories
+  const { categories, parserLog } = useMemo(() => processDashCamFiles(fileList), [fileList]);
+
+  // categories -> events
+  const categoryList = useMemo(() => TeslaFS.clipCategories.filter((scope) => !!Object.keys(categories[scope] || {}).length), [categories]);
+  const [activeCategory, setActiveCategory] = useState<TeslaFS.ClipCategory>(TeslaFS.ClipCategory.Unknown);
+  const activeEvents: PlaybackEvents = categories[activeCategory];
+  const activeEventsTimestamps = useMemo(() => getSortedKeys(activeEvents), [activeEvents]);
   useEffect(() => {
-    setFocusedCategory(availableCategories[0] || null);
-  }, [availableCategories]);
+    const [firstAvailableCategory] = categoryList;
+    setActiveCategory(firstAvailableCategory ?? TeslaFS.ClipCategory.Unknown);
+  }, [categoryList]);
 
-  const focusedEventGroup: PlaybackEventGroup = useMemo(() => {
-    if (focusedCategory === null) return eventGroup;
-    return (
-      categorizedGroups[focusedCategory]?.reduce((group, timestamp) => {
-        group[timestamp] = eventGroup[timestamp];
-        return group;
-      }, {} as PlaybackEventGroup) ?? eventGroup
-    );
-  }, [eventGroup, focusedCategory, categorizedGroups]);
-  const allEventTimestampsOrdered = useMemo(() => getSortedKeys(focusedEventGroup), [focusedEventGroup]);
-  const { currentEvent, currentEventTimestamp, setCurrentEventTimestamp, currentEventTimestamps } = useCurrentEvent(
-    allEventTimestampsOrdered,
-    eventGroup
-  );
-
-  const { clipGroup, setCurrentClipsTimestamp } = useCurrentEventClips(currentEvent);
-
-  const currentClipsTimestamp = clipGroup?.timestamp ?? null;
-  const playSibling = usePlaySibling(
-    focusedEventGroup,
-    currentEventTimestamp,
-    setCurrentEventTimestamp,
-    currentClipsTimestamp,
-    setCurrentClipsTimestamp
-  );
+  // events -> current event
+  const [currentEventTimestamp, setCurrentEventTimestamp] = useState<TeslaFS.Timestamp | null>(null);
+  const { currentEvent, currentEventTimestamps } = useCurrentEvent(currentEventTimestamp, activeEvents);
+  useEffect(() => {
+    const [firstEventTimestamp] = activeEventsTimestamps;
+    setCurrentEventTimestamp(firstEventTimestamp ?? null);
+  }, [activeEventsTimestamps]);
 
   return (
     <>
       {parserLog.length > 0 && <ParserLogViewer parserLog={parserLog} />}
       <Box display="flex" flexDirection={["column", "column", "row"]} sx={{ gap: 1 }} overflow="auto">
         <Box as="nav" display="inline-flex" flexDirection="column" sx={{ gap: 2 }}>
-          {availableCategories.length > 0 && (
-            <SubNavs options={availableCategories} value={focusedCategory} onChange={(scope) => setFocusedCategory(scope)} />
-          )}
+          {categoryList.length > 1 && <SubNavs options={categoryList} value={activeCategory} onChange={setActiveCategory} />}
           <Box display="flex" flexWrap={["wrap", "nowrap", "nowrap"]} sx={{ gap: 1 }}>
             <TimestampSelect
               sx={{ display: ["none", "none", "flex"] }}
               label={
                 <>
-                Events <CounterLabel>{allEventTimestampsOrdered.length}</CounterLabel>
+                  Events <CounterLabel>{activeEventsTimestamps.length}</CounterLabel>
                 </>
               }
               innerSx={{ maxHeight: 600, overflowY: "auto" }}
-                options={allEventTimestampsOrdered}
-                renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp)}
-                value={currentEventTimestamp}
-                onChange={(timestamp) => {
-                  setCurrentClipsTimestamp(null);
-                  setCurrentEventTimestamp(timestamp);
-                }}
-              />
+              options={activeEventsTimestamps}
+              renderOption={pipe(({ value }) => value, TeslaFS.formatTimestamp)}
+              value={currentEventTimestamp}
+              onChange={setCurrentEventTimestamp}
+            />
             <FormSelect
               sx={{ display: ["flex", "flex", "none"] }}
               label={
                 <>
-                  Events <CounterLabel>{allEventTimestampsOrdered.length}</CounterLabel>
+                  Events <CounterLabel>{activeEventsTimestamps.length}</CounterLabel>
                 </>
               }
-              options={allEventTimestampsOrdered}
-              renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp)}
+              options={activeEventsTimestamps}
+              renderOption={pipe(({ value }) => value, TeslaFS.formatTimestamp)}
               value={currentEventTimestamp}
-              onChange={(timestamp) => {
-                setCurrentClipsTimestamp(null);
-                setCurrentEventTimestamp(timestamp);
-              }}
+              onChange={setCurrentEventTimestamp}
             />
           </Box>
         </Box>
         {/* minWidth for preventing the area grow out of view */}
         <Box as="main" flex="1" minWidth="0">
-          <TimestampSelect
-            sx={{ display: ["none", "none", "flex"] }}
-            label={
-              <>
-                Clips of event
-                <CounterLabel>{currentEventTimestamps.length}</CounterLabel>
-              </>
-            }
-            innerSx={{ maxHeight: 600, overflowY: "auto" }}
-            options={currentEventTimestamps}
-            renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp, "time")}
-            value={currentClipsTimestamp}
-            onChange={setCurrentClipsTimestamp}
-            />
-            <FormSelect
-            sx={{ display: ["flex", "flex", "none"] }}
-              label={
-                <>
-                Clips of event
-                <CounterLabel>{currentEventTimestamps.length}</CounterLabel>
-                </>
-              }
-              options={currentEventTimestamps}
-              renderOption={({ value: timestamp }) => TeslaFS.formatTimestamp(timestamp, "time")}
-              value={currentClipsTimestamp}
-              onChange={setCurrentClipsTimestamp}
-            />
-          {clipGroup && (
-            <MatrixPlayer
-              eventName={clipGroup.timestamp}
-              baseTime={TeslaFS.parseTimestamp(clipGroup.timestamp)}
-              playSibling={playSibling}
-              videos={clipGroup.clips}
-            />
-          )}
+          {currentEvent && <EventPlayer currentEvent={currentEvent} currentEventTimestamps={currentEventTimestamps} />}
         </Box>
       </Box>
     </>
