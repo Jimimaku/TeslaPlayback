@@ -1,12 +1,12 @@
 import { Box, Heading, Text } from "@primer/react";
-import React, { PropsWithChildren } from "react";
+import { Component, PropsWithChildren } from "react";
 
 type State = {
   hasError: boolean;
   error: unknown;
 };
 
-export class ErrorBoundary extends React.Component<PropsWithChildren<unknown>, State> {
+export class ErrorBoundary extends Component<PropsWithChildren<unknown>, State> {
   state: State = { hasError: false, error: null };
 
   static getDerivedStateFromError(error: unknown) {

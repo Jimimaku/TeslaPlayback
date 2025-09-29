@@ -1,6 +1,6 @@
 import { DialogHeaderProps, DialogProps } from "@primer/react";
 import { Dialog as PrimerDialog } from "@primer/react/experimental";
-import { PropsWithChildren, ReactNode, useRef, useState } from "react";
+import { PropsWithChildren, ReactNode, RefObject, useRef, useState } from "react";
 
 export function Dialog<E extends HTMLElement>({
   trigger,
@@ -8,7 +8,7 @@ export function Dialog<E extends HTMLElement>({
   title,
   dialogProps,
 }: PropsWithChildren<{
-  trigger: (isOpen: ReactStateIO<boolean>, ref: React.RefObject<E>) => ReactNode;
+  trigger: (isOpen: ReactStateIO<boolean>, ref: RefObject<E>) => ReactNode;
   title?: ReactNode;
   headerProps?: Partial<DialogHeaderProps>;
   dialogProps?: Partial<DialogProps>;

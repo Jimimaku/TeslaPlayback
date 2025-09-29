@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { InputHTMLAttributes, useRef } from "react";
 
 export function ProgressBar({
   onChange,
@@ -11,7 +11,7 @@ export function ProgressBar({
   onChange(progress: number): void;
   onDragStart?(): void;
   onDragEnd?(): void;
-  native?: React.InputHTMLAttributes<HTMLInputElement>;
+  native?: InputHTMLAttributes<HTMLInputElement>;
 }) {
   const draggingRef = useRef(false);
   return (

@@ -1,7 +1,7 @@
-import React from "react";
+import { Children, CSSProperties, isValidElement, ReactElement } from "react";
 
-type DecoratableReactElement = React.ReactElement<{
-  style?: React.CSSProperties;
+type DecoratableReactElement = ReactElement<{
+  style?: CSSProperties;
 }>;
 
 export function LayoutComposer({
@@ -9,15 +9,13 @@ export function LayoutComposer({
   decorator,
   style,
 }: {
-  children: DecoratableReactElement | Iterable<DecoratableReactElement>;
-  decorator: (index: number, element: DecoratableReactElement) => DecoratableReactElement;
-  style?: React.CSSProperties;
+  children: Iterable<DecoratableReactElement> | DecoratableReactElement[];
+  decorator: (index: number, element: ReactElement) => DecoratableReactElement;
+  style?: CSSProperties;
 }) {
   return (
     <div style={{ display: "flex", position: "relative", ...style }}>
-      {React.Children.map(React.Children.toArray(children) as Array<DecoratableReactElement>, (child, index) =>
-        React.isValidElement(child) && child.key !== null ? decorator(index, child) : child
-      )}
+      {Children.map(Children.toArray(children), (child, index) => (isValidElement(child) && child.key !== null ? decorator(index, child) : child))}
     </div>
   );
 }

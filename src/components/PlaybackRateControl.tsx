@@ -1,13 +1,13 @@
 import { DashIcon, PlusIcon, StopwatchIcon } from "@primer/octicons-react";
 import { Box, IconButton } from "@primer/react";
-import React, { FC } from "react";
+import { Dispatch, FC, SetStateAction } from "react";
 
 const multi = (value: number, factor: number) => value * factor;
 const divide = (value: number, factor: number) => value / factor;
 
 export const PlaybackRateControl: FC<{
   playbackRate: number;
-  setPlaybackRate: React.Dispatch<React.SetStateAction<number>>;
+  setPlaybackRate: Dispatch<SetStateAction<number>>;
 }> = ({ playbackRate, setPlaybackRate }) => (
   <Box display="inline-flex" alignItems="center" sx={{ gap: 1 }}>
     <IconButton

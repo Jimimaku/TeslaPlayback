@@ -1,5 +1,5 @@
 import { Checkbox, CheckboxGroup, FormControl } from "@primer/react";
-import { ReactNode } from "react";
+import { ComponentProps, ReactNode } from "react";
 
 const resolveOption = <T extends string>(option: T | Option<T>): Option<T> =>
   typeof option === "string" ? { value: option, label: option } : option;
@@ -13,7 +13,7 @@ type CheckboxGroupProps<T extends string> = {
   validation?: ReactNode;
 } & IO<T[], T[] | null>;
 
-type PrimerCheckboxGroupProps = Omit<React.ComponentProps<typeof CheckboxGroup>, "children">;
+type PrimerCheckboxGroupProps = Omit<ComponentProps<typeof CheckboxGroup>, "children">;
 export type FormMultiSelectProps<T extends string> = NonConflictJoin<CheckboxGroupProps<T>, PrimerCheckboxGroupProps>;
 
 export function FormCheckboxGroup<T extends string>({

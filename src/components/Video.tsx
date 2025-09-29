@@ -1,5 +1,5 @@
 import { Box, Text } from "@primer/react";
-import React, { useEffect, useImperativeHandle } from "react";
+import { forwardRef, ReactNode, useEffect, useImperativeHandle, useRef, useState, VideoHTMLAttributes } from "react";
 
 type Props = {
   file?: File;
@@ -7,7 +7,7 @@ type Props = {
   play?: boolean;
   progress?: number;
   playbackRate?: number;
-  native?: React.VideoHTMLAttributes<HTMLVideoElement>;
+  native?: VideoHTMLAttributes<HTMLVideoElement>;
 };
 
 export type VideoProps = Props;
@@ -18,9 +18,9 @@ type Ref = {
 
 export type VideoRef = Ref;
 
-export const Video = React.forwardRef<Ref, Props>(function Video({ file, label, playbackRate = 1, native, play, progress }, ref) {
-  const videoRef = React.useRef<HTMLVideoElement | null>(null);
-  const [error, setError] = React.useState<MediaError | null>(null);
+export const Video = forwardRef<Ref, Props>(function Video({ file, label, playbackRate = 1, native, play, progress }, ref) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [error, setError] = useState<MediaError | null>(null);
 
   useImperativeHandle(ref, () => ({
     play() {},
@@ -102,6 +102,6 @@ export const Video = React.forwardRef<Ref, Props>(function Video({ file, label, 
   );
 });
 
-function friendlyFormatErrorMessage(error: MediaError): React.ReactNode {
+function friendlyFormatErrorMessage(error: MediaError): ReactNode {
   return error.message === "MEDIA_ELEMENT_ERROR: Empty src attribute" ? "File not found" : error.message;
 }
