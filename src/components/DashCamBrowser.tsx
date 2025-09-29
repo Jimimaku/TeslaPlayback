@@ -4,9 +4,9 @@ import { TeslaFS } from "../TeslaFS";
 import { PlaybackEventGroup } from "../common";
 import { useCurrentEventClips } from "../hooks/useCurrentClipTimestamp";
 import { useCurrentEvent } from "../hooks/useCurrentEvent";
-import { useDashCamEvents } from "../hooks/useDashCamEvents";
 import { usePlaySibling } from "../hooks/usePlaySibling";
 import { getSortedKeys } from "../utils/general";
+import { processDashCamFiles } from "../utils/teslaFileSystem/processDashCamFiles";
 import { MatrixPlayer } from "./MatrixPlayer";
 import { ParserLogViewer } from "./ParserLogViewer";
 import { SubNavs } from "./SubNavs";
@@ -14,7 +14,7 @@ import { TimestampSelect } from "./TimestampSelect";
 import { FormSelect } from "./base/Select";
 
 export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
-  const { eventGroup, categorizedGroups, parserLog } = useDashCamEvents(fileList) ?? {};
+  const { categorizedGroups, parserLog } = useMemo(() => processDashCamFiles(fileList), [fileList]);
   const availableCategories = useMemo(() => TeslaFS.clipCategories.filter((scope) => !!categorizedGroups[scope]?.length), [categorizedGroups]);
   const [focusedCategory, setFocusedCategory] = useState<TeslaFS.ClipCategory | null>(null);
   useEffect(() => {
