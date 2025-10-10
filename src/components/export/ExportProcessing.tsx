@@ -1,4 +1,4 @@
-import { Box, Button, ProgressBar, Text } from "@primer/react";
+import { Box, Button, ProgressBar } from "@primer/react";
 import { useEffect, useState } from "react";
 import { ExportStateIdle, ExportStateProcessing } from ".";
 import { Progress } from "../../utils/exportVideo/convert";
@@ -29,11 +29,6 @@ export function ExportProcessing({
           Cancel
         </Button>
       </Box>
-      <Box as="hr" width="100%" borderTop="none" />
-      <Text as="label" color="neutral.emphasis" fontSize={1}>
-        It will take 3~20 minutes to process the video, depends on your computer's performance. You can reduce the time by reduce video duration with
-        Trim Start and Trim End.
-      </Text>
     </Box>
   );
 }

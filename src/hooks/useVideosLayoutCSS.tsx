@@ -1,5 +1,5 @@
 import { CSSProperties, useMemo } from "react";
-import { keys } from "../utils/general";
+import { VideoLayoutKey } from "../utils/VideoLayoutKey";
 
 type LayoutMap<Key extends string> = Record<
   Key,
@@ -8,32 +8,6 @@ type LayoutMap<Key extends string> = Record<
     children: CSSProperties[];
   }
 >;
-
-const layouts = {
-  ["1/2/1"]: [
-    [2, 0, 2, 2],
-    [2, 2, 2, 2],
-    [0, 1, 2, 2],
-    [4, 1, 2, 2],
-  ],
-  ["2/2"]: [
-    [0, 0, 1, 1],
-    [1, 0, 1, 1],
-    [0, 1, 1, 1],
-    [1, 1, 1, 1],
-  ],
-  ["2/2/2"]: [
-    [0, 0, 1, 1],
-    [1, 0, 1, 1],
-    [2, 0, 1, 1],
-    [0, 1, 1, 1],
-    [1, 1, 1, 1],
-    [2, 1, 1, 1],
-  ],
-};
-
-export type LayoutKey = keyof typeof layouts;
-export const layoutKeys = keys(layouts) as LayoutKey[];
 
 function generateLayoutMaps<Key extends string>(raw: Record<Key, number[][]>, aspectRatio: number): LayoutMap<Key> {
   return Object.entries(raw).reduce((merged, [key, layout]) => {
@@ -60,7 +34,25 @@ function generateLayoutMaps<Key extends string>(raw: Record<Key, number[][]>, as
   }, {} as LayoutMap<Key>);
 }
 
-export function useVideosLayout(layout: LayoutKey, aspectRatio: number) {
-  const layoutMaps = useMemo(() => generateLayoutMaps(layouts, aspectRatio), [aspectRatio]);
+export function useVideosLayoutCSS(layout: VideoLayoutKey, aspectRatio: number) {
+  const layoutMaps = useMemo(() => generateLayoutMaps(videoLayoutFlexConfig, aspectRatio), [aspectRatio]);
   return layoutMaps[layout];
 }
+export const videoLayoutFlexConfig: {
+  [key in VideoLayoutKey]: [x: number, y: number, width: number, height: number][];
+} = {
+  [VideoLayoutKey.CLASSIC]: [
+    [0, 0, 1, 1],
+    [1, 0, 1, 1],
+    [0, 1, 1, 1],
+    [1, 1, 1, 1],
+  ],
+  [VideoLayoutKey.HW4]: [
+    [0, 0, 1, 1],
+    [1, 0, 1, 1],
+    [2, 0, 1, 1],
+    [0, 1, 1, 1],
+    [1, 1, 1, 1],
+    [2, 1, 1, 1],
+  ],
+};

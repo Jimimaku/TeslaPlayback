@@ -1,9 +1,10 @@
 import { Box, Button, Checkbox, FormControl, Radio, RadioGroup, Text, TextInput } from "@primer/react";
 import { useEffect, useState } from "react";
 import { ExportState } from ".";
-import { ClipFiles, Directions, PlaybackEventSlice } from "../../common";
+import { Directions, PlaybackEvent } from "../../common";
 import { EventHub } from "../../utils/EventHub";
 import { DrawTextStyle, loadConverter, Progress } from "../../utils/exportVideo/convert";
+import { Option } from "../../utils/option";
 import { FormCheckboxGroup } from "../base/CheckboxGroup";
 import { ExpandButton } from "../base/ExpandButton";
 import { useNumberField } from "./useNumberField";
@@ -18,25 +19,10 @@ const cameraOptions: Option<CameraOption>[] = [
   { value: Directions.rightPillar, label: "Right Pillar" },
 ];
 
-const filterFileMap = (fileMap: ClipFiles, views: CameraOption[]): ClipFiles => {
-  const filtered: ClipFiles = {};
-  for (const view of views) {
-    filtered[view] = fileMap[view];
-  }
-  return filtered;
-};
-
 const showDrawTextSettings = false;
 const showAdvancedTextSetting = false;
-export function ExportPrepare({
-  setExportState,
-  totalTime,
-  clips: [eventDate, videos],
-}: {
-  setExportState: (state: ExportState) => void;
-  totalTime?: number;
-  clips: PlaybackEventSlice;
-}) {
+export function ExportPrepare({ setExportState, event }: { setExportState: (state: ExportState) => void; event: PlaybackEvent }) {
+  const [, slices] = event;
   const [views, setViews] = useState<CameraOption[]>([
     Directions.front,
     Directions.rear,
@@ -63,7 +49,7 @@ export function ExportPrepare({
   }, [fontSizeField.value]);
 
   const trimStartField = useNumberField(0);
-  const trimEndField = useNumberField(totalTime ? Math.floor(totalTime + 1) : 60);
+  const trimEndField = useNumberField(0);
 
   const allFieldsValid = trimStartField.validation === null && trimEndField.validation === null && fontSizeField.validation === null;
 
@@ -74,8 +60,8 @@ export function ExportPrepare({
       const progressHub = new EventHub<Progress>();
       const convert = await loadConverter();
       const { cancel, result } = await convert(
-        filterFileMap(videos, views),
-        { text: eventDate ? [eventDate, drawTextOptions] : undefined, trim: [trimStartField.value, trimEndField.value] },
+        [], // filterFileMap(slices, views),
+        { size: { w: 0, h: 0 } }, // { text: eventDate ? [eventDate, drawTextOptions] : undefined },
         {
           onProgress: progressHub.dispatch,
           onError: (error) => {
@@ -91,7 +77,8 @@ export function ExportPrepare({
         onProgress: progressHub.addListener,
       });
 
-      setExportState({ state: "done", output: await result });
+      const output = await result;
+      setExportState({ state: "done", getOutput: () => output });
     } catch (err) {
       console.error(err);
       setExportState({ state: "fail", reason: `Failed processing video: ${err}` });
@@ -104,7 +91,7 @@ export function ExportPrepare({
         label="Cameras"
         value={views}
         onChange={setViews}
-        options={cameraOptions.map((option) => (videos[option.value] ? option : { ...option, disabled: true }))}
+        options={cameraOptions.map((option) => (slices[option.value] ? option : { ...option, disabled: true }))}
       />
       {showDrawTextSettings && (
         <FormControl>
@@ -167,36 +154,6 @@ export function ExportPrepare({
           )}
         </FormControl>
       )}
-      <Box display="flex" sx={{ gap: 2 }}>
-        <FormControl disabled={!totalTime}>
-          <FormControl.Label>Trim Start</FormControl.Label>
-          <TextInput
-            type="number"
-            min={0}
-            max={totalTime}
-            trailingVisual="seconds"
-            value={trimStartField.raw ?? ""}
-            onChange={(e) => trimStartField.setRaw(e.target.value)}
-          />
-          {trimStartField.validation && (
-            <FormControl.Validation variant={trimStartField.validation.type}>{trimStartField.validation.message}</FormControl.Validation>
-          )}
-        </FormControl>
-        <FormControl disabled={!totalTime}>
-          <FormControl.Label>Trim End</FormControl.Label>
-          <TextInput
-            type="number"
-            min={0}
-            max={totalTime}
-            trailingVisual="seconds"
-            value={trimEndField.raw ?? ""}
-            onChange={(e) => trimEndField.setRaw(e.target.value)}
-          />
-          {trimEndField.validation && (
-            <FormControl.Validation variant={trimEndField.validation.type}>{trimEndField.validation.message}</FormControl.Validation>
-          )}
-        </FormControl>
-      </Box>
       <Box as="hr" width="100%" borderTop="none" />
       <Button variant="primary" disabled={!allFieldsValid} onClick={startConvert}>
         Start

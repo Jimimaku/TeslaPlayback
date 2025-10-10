@@ -1,39 +1,28 @@
 import { DownloadIcon } from "@primer/octicons-react";
 import { Box, Button } from "@primer/react";
 import { useMemo } from "react";
-import { ExportStateDone, ExportStateIdle } from ".";
+import { ExportStateDone } from ".";
 import { downloadBlob } from "../../utils/general";
 
 export function ExportDone({
   exportFileName,
   exportState,
-  setExportState,
+  onFinish,
 }: {
   exportFileName: string;
   exportState: ExportStateDone;
-  setExportState: (state: ExportStateIdle) => void;
+  onFinish?: () => void;
 }) {
-  const { output } = exportState;
-  const videoSrc = useMemo(() => URL.createObjectURL(output), [output]);
+  const { getOutput } = exportState;
+  const videoSrc = useMemo(() => URL.createObjectURL(getOutput()), [getOutput]);
   return (
     <Box>
       <video aria-label="Exported video" controls autoPlay style={{ width: "100%" }} src={videoSrc} />
       <Box display="flex" justifyContent="space-between">
-        <Button
-          onClick={() => {
-            downloadBlob(output, exportFileName);
-          }}
-          leadingVisual={DownloadIcon}
-        >
+        <Button onClick={() => downloadBlob(getOutput(), exportFileName)} leadingVisual={DownloadIcon}>
           Download
         </Button>
-        <Button
-          onClick={() => {
-            setExportState({ state: "idle" });
-          }}
-        >
-          Done
-        </Button>
+        <Button onClick={onFinish}>Done</Button>
       </Box>
     </Box>
   );

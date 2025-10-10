@@ -1,25 +1,40 @@
-import { ClipFiles } from "../../common";
-
 export interface ConvertConfig {
   text?: [content: Date | string, style: DrawTextStyle];
-  trim?: [start: number, end: number];
+  trim?: [start: Date, end: Date];
+  size: Size;
+}
+
+interface CancelableJob<T> {
+  result: Promise<T>;
+  cancel: () => void;
+}
+
+export interface Position {
+  x: number;
+  y: number;
+}
+
+export interface Size {
+  w: number;
+  h: number;
+}
+
+export interface Quad extends Position, Size {}
+
+export interface ConvertTrack {
+  sourceMeta: string | File;
+  quad: Quad;
+  duration: [Date, Date]; // enhancement: end time can be omit and resolved after loading actual video
+}
+
+export interface ConvertCallbacks {
+  // TODO: add preview callback
+  onProgress: (progress: Progress) => void;
+  onError: (error: Error | undefined) => void;
 }
 
 export interface Convert {
-  (
-    fileMap: ClipFiles,
-    options: ConvertConfig,
-    {
-      onProgress,
-      onError,
-    }: {
-      onProgress: (progress: Progress) => void;
-      onError: (error: Error | undefined) => void;
-    }
-  ): Promise<{
-    result: Promise<Blob>;
-    cancel: () => void;
-  }>;
+  (tracks: ConvertTrack[], config: ConvertConfig, callbacks: ConvertCallbacks): Promise<CancelableJob<Blob>>;
 }
 
 export type Progress = number;
@@ -28,7 +43,7 @@ export async function loadConverter(): Promise<Convert> {
   return (await import("./mediabunny")).convert;
 }
 
-export type DrawTextStyle = {
+export interface DrawTextStyle {
   fontSize?: number;
   fontColor?: string;
   background?: boolean;
@@ -37,4 +52,4 @@ export type DrawTextStyle = {
   y?: number;
   baseTime?: string;
   timeFormat?: string;
-};
+}
