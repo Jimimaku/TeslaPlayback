@@ -1,5 +1,6 @@
 import { Checkbox, CheckboxGroup, FormControl } from "@primer/react";
 import { ComponentProps, ReactNode } from "react";
+import { Option } from "../../utils/option";
 
 const resolveOption = <T extends string>(option: T | Option<T>): Option<T> =>
   typeof option === "string" ? { value: option, label: option } : option;

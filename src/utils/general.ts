@@ -80,10 +80,9 @@ export function shiftTime(time: Date, shift: number) {
 }
 
 export const entries = <K extends string | number | symbol, V>(obj: Record<K, V> | Partial<Record<K, V>>) => Object.entries(obj) as [K, V][];
-
 export const fromEntries = <K extends string | number | symbol, V>(entries: [K, V][]) => Object.fromEntries(entries) as Record<K, V>;
 
-export const isNotFalsy = <T>(item: T | false | 0 | null | undefined | ""): item is T => !!item;
+export const values = <T extends object>(obj: T): T[keyof T][] => Object.values(obj) as T[keyof T][];
 
 export const mapAndFind = <T, R>(arr: T[], fn: (item: T, index: number, array: T[]) => R | undefined): R | undefined => {
   for (let i = 0; i < arr.length; i++) {

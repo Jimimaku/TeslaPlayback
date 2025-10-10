@@ -10,12 +10,12 @@ export function LayoutComposer({
   style,
 }: {
   children: Iterable<DecoratableReactElement> | DecoratableReactElement[];
-  decorator: (index: number, element: ReactElement) => DecoratableReactElement;
+  decorator: (element: ReactElement, index: number) => DecoratableReactElement;
   style?: CSSProperties;
 }) {
   return (
     <div style={{ display: "flex", position: "relative", ...style }}>
-      {Children.map(Children.toArray(children), (child, index) => (isValidElement(child) && child.key !== null ? decorator(index, child) : child))}
+      {Children.map(Children.toArray(children), (child, index) => (isValidElement(child) && child.key !== null ? decorator(child, index) : child))}
     </div>
   );
 }

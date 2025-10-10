@@ -1,8 +1,6 @@
 import { FormControl, Select as PrimerSelect, SelectProps as PrimerSelectProps } from "@primer/react";
 import { ReactNode } from "react";
-
-const resolveOption = <T extends string>(option: T | Option<T>): Option<T> =>
-  typeof option === "string" ? { value: option, label: option } : option;
+import { Option, resolveOption } from "../../utils/option";
 
 type CommonSelectProps<T extends string> = {
   options: (T | Option<T>)[];

@@ -1,7 +1,3 @@
-/// <reference lib="react" />
-
-type Option<T> = { value: T; label: React.ReactNode; disabled?: boolean };
-
 type IO<T, V = T> = {
   value: V;
   onChange: (value: T) => void;
