@@ -1,7 +1,7 @@
 import { DownloadIcon } from "@primer/octicons-react";
 import { Box, Button } from "@primer/react";
 import { useMemo } from "react";
-import { ExportStateDone } from ".";
+import { ExportConvertStateDone } from ".";
 import { downloadBlob } from "../../utils/general";
 
 export function ExportDone({
@@ -10,7 +10,7 @@ export function ExportDone({
   onFinish,
 }: {
   exportFileName: string;
-  exportState: ExportStateDone;
+  exportState: ExportConvertStateDone;
   onFinish?: () => void;
 }) {
   const { getOutput } = exportState;

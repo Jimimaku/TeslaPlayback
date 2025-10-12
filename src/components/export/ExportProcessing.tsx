@@ -1,14 +1,14 @@
 import { Box, Button, ProgressBar } from "@primer/react";
 import { useEffect, useState } from "react";
-import { ExportStateIdle, ExportStateProcessing } from ".";
+import { ExportConvertStateIdle, ExportConvertStateProcessing } from ".";
 import { Progress } from "../../utils/exportVideo/convert";
 
 export function ExportProcessing({
   exportState,
   setExportState,
 }: {
-  exportState: ExportStateProcessing;
-  setExportState: (state: ExportStateIdle) => void;
+  exportState: ExportConvertStateProcessing;
+  setExportState: (state: ExportConvertStateIdle) => void;
 }) {
   const { onProgress, cancel } = exportState;
   const [progress, setProgress] = useState<Progress>(0);

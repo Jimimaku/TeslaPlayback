@@ -1,3 +1,5 @@
+import { tryCatch } from "ramda";
+
 export function formatHMS(seconds: number, forceRender: "h" | "m" = "m") {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -59,13 +61,14 @@ export function dataURLtoFile(dataUrl: string, filename: string) {
   return new File([u8arr], filename, { type: mime });
 }
 
-export function formatDateTime(dateTime: Date) {
-  // YYYY-mm-DD HH:MM:SS
-  return dateTime
-    .toISOString()
-    .replace("T", " ")
-    .replace(/\.\d+Z$/, "");
-}
+export const formatDateTime = tryCatch(
+  (dateTime: Date) =>
+    dateTime
+      .toISOString()
+      .replace("T", " ")
+      .replace(/\.\d+Z$/, ""),
+  () => "Invalid Date"
+);
 
 export function formatHHMMSS(seconds: number) {
   // HH:MM:SS

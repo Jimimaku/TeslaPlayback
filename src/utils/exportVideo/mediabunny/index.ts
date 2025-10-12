@@ -12,8 +12,9 @@ import {
   VideoSampleSink,
   getFirstEncodableVideoCodec,
 } from "mediabunny";
-import { getBlob, isNotFalsy } from "../../general";
-import { Convert, ConvertConfig, Progress } from "../convert";
+import { min, zipWith } from "ramda";
+import { formatDateTime, getBlob } from "../../general";
+import { Convert, Size } from "../convert";
 import { CancelSingal } from "./CancelSingal";
 import { drawTextOverlay } from "./text";
 
@@ -44,125 +45,76 @@ async function loadVideoTrack(sourceMeta: SourceMeta): Promise<LoadedTrack> {
   return { input, videoTrack, duration };
 }
 
-type LayoutSlot = { x: number; y: number; w: number; h: number };
-
-function generateLayoutSlots(size: { width: number; height: number }, rowsAmount: number, colsAmount: number): LayoutSlot[] {
-  const slots: LayoutSlot[] = [];
-  for (let row = 0; row < rowsAmount; row++) {
-    for (let col = 0; col < colsAmount; col++) {
-      slots.push({
-        x: col * size.width,
-        y: row * size.height,
-        w: size.width,
-        h: size.height,
-      });
-    }
-  }
-  return slots;
-}
-
-type MediaBunnyConvertConfig = {
-  sourcesMeta: SourceMeta[];
-  onProgress?: (progress: Progress) => void;
-  options?: ConvertConfig;
-};
-
-async function mediaBunnyConvert(config: MediaBunnyConvertConfig) {
+export const convert: Convert = async function (tracksToConvert, config, callbacks) {
   const cancelSignal = new CancelSingal();
 
-  const getResult = async (cancelSignal: CancelSingal, { sourcesMeta, onProgress, options: { text, trim } = {} }: MediaBunnyConvertConfig) => {
+  const getResult = async (cancelSignal: CancelSingal) => {
+    const { text, trim, size } = config;
+
     // ) Inputs
-    const inputs = await Promise.all(sourcesMeta.map(loadVideoTrack));
+    // TODO: load inputs on-demand according to processing time; but we'll lose some meta data in the beginning
+    const inputs = await Promise.all(tracksToConvert.map(({ sourceMeta }) => sourceMeta).map(loadVideoTrack));
+    const durations = await Promise.all(inputs.map((input) => input.videoTrack?.computeDuration()));
+    const [tracksStartTime, tracksEndTime] = tracksToConvert
+      .filter(
+        trim
+          ? ({ duration: [start, end] }) => {
+              const [trimStart, trimEnd] = trim;
+              return start < trimEnd && end > trimStart;
+            }
+          : () => true
+      )
+      .map(({ duration }) => duration.map((t) => t.getTime()))
+      .map((duration, k): typeof duration => {
+        const realDuration = durations[k];
+        return realDuration ? (zipWith(min, [duration[0], +duration[0] + realDuration * 1000], duration) as number[]) : duration;
+      })
+      .reduce(([earliest, latest], [start, end]) => [Math.min(earliest, start), Math.max(latest, end)]);
 
-    // ) Timeline: use min duration across the 4 videos
+    // ) Timeline
+    const totalDurationMs = tracksEndTime - tracksStartTime;
     const fps = 30; // TODO: get from video
-    const frameDur = 1 / fps;
-    const minDur = Math.min(...inputs.map((i) => i.duration));
-    const frameCount = Math.max(1, Math.floor(minDur * fps));
-
-    // ) Get video resolutions
-    const displaySize = inputs.reduce<{
-      w: number;
-      h: number;
-    } | null>((size, { videoTrack }) => {
-      if (!videoTrack) return size;
-
-      const { displayWidth, displayHeight } = videoTrack;
-      if (!size)
-        return {
-          w: displayWidth,
-          h: displayHeight,
-        };
-
-      return {
-        w: Math.max(size.w, displayWidth),
-        h: Math.max(size.h, displayHeight),
-      };
-    }, null);
-    if (!displaySize) throw new Error("No video track found from inputs");
-
-    const colsAmount = Math.ceil(Math.sqrt(sourcesMeta.length));
-    const rowsAmount = Math.ceil(sourcesMeta.length / colsAmount);
-
-    const outWidth = displaySize.w * colsAmount;
-    const outHeight = displaySize.h * rowsAmount;
+    const frameDurS = 1 / fps;
+    const frameCount = Math.max(1, Math.floor((totalDurationMs / 1000) * fps));
 
     // ) Canvas & output
-    const canvas = document.createElement("canvas");
-    canvas.width = outWidth;
-    canvas.height = outHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("No canvas 2D context");
+    const { videoSource, output, ctx, target } = await setupCanvas(size);
 
-    // Choose an encodable codec (avc1 / av1 / vp9 depends on the environment)
-    const codec = await getFirstEncodableVideoCodec(["avc", "av1", "vp9"]);
-    if (codec === null) throw new Error("No encodable video codec found");
-
-    const videoSource = new CanvasSource(canvas, { codec, bitrate: QUALITY_MEDIUM }); // encode canvas frames
-    const target = new BufferTarget(); // write to ArrayBuffer
-
-    const output = new Output({
-      format: new Mp4OutputFormat(), // or new WebMOutputFormat()
-      target,
-    });
-
-    output.addVideoTrack(videoSource); // add before start()
-
-    await output.start();
-    const quads = generateLayoutSlots(
-      {
-        width: displaySize.w,
-        height: displaySize.h,
-      },
-      rowsAmount,
-      colsAmount
-    );
-    const sinks = inputs.map(({ videoTrack }) => videoTrack && new VideoSampleSink(videoTrack));
-    const [firstFrame, finalFrame] = trim?.map((s) => s * fps) ?? [0, frameCount];
-    const totalFrames = finalFrame - firstFrame;
+    const sinks = inputs.map(({ videoTrack }) => videoTrack).map((videoTrack) => videoTrack && new VideoSampleSink(videoTrack));
 
     // ) Frame loop
-    for (let i = firstFrame; i < finalFrame; i++) {
+    for (let i = 0; i < frameCount; i++) {
       if (cancelSignal.isCanceled) {
         videoSource.close();
         output.cancel();
         throw new Error("Processing canceled");
       }
 
-      const t = i * frameDur;
+      const timeInVideoS = i * frameDurS;
+      const timeInReality = timeInVideoS * 1000 + tracksStartTime;
 
-      onProgress?.((i - firstFrame) / totalFrames);
+      callbacks.onProgress?.((i - 0) / frameCount);
 
-      ctx.clearRect(0, 0, outWidth, outHeight);
+      ctx.clearRect(0, 0, size.w, size.h);
 
-      const samples = await Promise.all(sinks.map((s) => s?.getSample(t)));
+      const samples = await Promise.all(
+        sinks.map((s, k) => {
+          const {
+            duration: [start, end],
+          } = tracksToConvert[k];
 
-      for (let k = 0; k < sourcesMeta.length; k++) {
+          if (!isDuring(timeInReality, tracksStartTime, tracksEndTime)) return;
+          if (!isDuring(timeInReality, +start, +end)) return;
+
+          return s?.getSample(timeInVideoS);
+        })
+      );
+
+      for (let k = 0; k < tracksToConvert.length; k++) {
         const s = samples[k];
         if (!s) continue;
 
-        const quad = quads[k];
-        if (!quad) continue;
+        const { quad } = tracksToConvert[k];
 
         // Destination rect inside the quad:
         s.draw(ctx, quad.x, quad.y, quad.w, quad.h); // accounts for rotation
@@ -172,15 +124,15 @@ async function mediaBunnyConvert(config: MediaBunnyConvertConfig) {
       if (text) {
         const [content, textStyle] = text;
         if (content instanceof Date) {
-          const timeOfFrame = new Date(+content + t * 1000);
-          const contentOfFrame = timeOfFrame.toLocaleString();
+          const timeOfFrame = new Date(+content + timeInVideoS * 1000);
+          const contentOfFrame = formatDateTime(timeOfFrame);
           drawTextOverlay(ctx, contentOfFrame, textStyle);
         } else {
           drawTextOverlay(ctx, content, textStyle);
         }
       }
 
-      await videoSource.add(t, frameDur); // encode the current canvas frame
+      await videoSource.add(timeInVideoS, frameDurS); // encode the current canvas frame
     }
 
     await output.finalize();
@@ -190,12 +142,28 @@ async function mediaBunnyConvert(config: MediaBunnyConvertConfig) {
     return getBlob(buffer, mime);
   };
 
-  return { result: getResult(cancelSignal, config), cancel: cancelSignal.cancel };
+  return { result: getResult(cancelSignal), cancel: cancelSignal.cancel };
+};
+
+async function setupCanvas(size: Size) {
+  const canvas = document.createElement("canvas");
+  canvas.width = size.w;
+  canvas.height = size.h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("No canvas 2D context");
+
+  // Choose an encodable codec (avc1 / av1 / vp9 depends on the environment)
+  const codec = await getFirstEncodableVideoCodec(["avc", "av1", "vp9"]);
+  if (codec === null) throw new Error("No encodable video codec found");
+  const videoSource = new CanvasSource(canvas, { codec, bitrate: QUALITY_MEDIUM }); // encode canvas frames
+  const target = new BufferTarget(); // write to ArrayBuffer
+  const output = new Output({
+    format: new Mp4OutputFormat(), // or new WebMOutputFormat()
+    target,
+  });
+  output.addVideoTrack(videoSource); // add before start()
+  await output.start();
+  return { videoSource, output, ctx, target };
 }
 
-export const convert: Convert = (inputs, options, { onProgress }) =>
-  mediaBunnyConvert({
-    sourcesMeta: [inputs.front, inputs.rear, inputs.left, inputs.right, inputs.left_pillar, inputs.right_pillar].filter(isNotFalsy),
-    onProgress,
-    options,
-  });
+const isDuring = (time: number, start: number, end: number) => time >= start && time <= end;

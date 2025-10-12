@@ -1,27 +1,32 @@
 import { Progress } from "../../utils/exportVideo/convert";
 
-export type ExportStateIdle = {
+export type ExportConvertStateIdle = {
   state: "idle";
 };
 
-export type ExportStateLoadingConverter = {
+export type ExportConvertStateLoadingConverter = {
   state: "loadingConverter";
 };
 
-export type ExportStateProcessing = {
+export type ExportConvertStateProcessing = {
   state: "processing";
   onProgress: (listener: (progress: Progress) => void) => void;
   cancel: () => void;
 };
 
-export type ExportStateDone = {
+export type ExportConvertStateDone = {
   state: "done";
   getOutput: () => Blob;
 };
 
-export type ExportStateFail = {
+export type ExportConvertStateFail = {
   state: "fail";
   reason: string;
 };
 
-export type ExportState = ExportStateIdle | ExportStateLoadingConverter | ExportStateProcessing | ExportStateDone | ExportStateFail;
+export type ExportConvertState =
+  | ExportConvertStateIdle
+  | ExportConvertStateLoadingConverter
+  | ExportConvertStateProcessing
+  | ExportConvertStateDone
+  | ExportConvertStateFail;

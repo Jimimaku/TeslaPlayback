@@ -14,7 +14,7 @@ export function useCurrentEventSlice([, slices]: PlaybackEvent) {
 
   return {
     currentSliceTimestamp,
-    sliceClips: (currentSliceTimestamp && slices?.[currentSliceTimestamp]) ?? null,
+    slice: (currentSliceTimestamp && slices?.[currentSliceTimestamp]) || null,
     setCurrentSliceTimestamp,
   };
 }

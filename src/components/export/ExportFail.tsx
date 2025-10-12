@@ -1,7 +1,7 @@
 import { Box, Button, Text } from "@primer/react";
-import { ExportStateFail } from ".";
+import { ExportConvertStateFail } from ".";
 
-export function ExportFail({ exportState, onDismiss }: { exportState: ExportStateFail; onDismiss?: () => void }) {
+export function ExportFail({ exportState, onDismiss }: { exportState: ExportConvertStateFail; onDismiss?: () => void }) {
   return (
     <Box>
       <Text>{exportState.reason}</Text>

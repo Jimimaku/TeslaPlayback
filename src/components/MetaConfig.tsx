@@ -1,0 +1,60 @@
+import { isNotNil, map, values, zipObj } from "ramda";
+import { PlaybackEvent } from "../common";
+import { ConvertConfig, ConvertTrack, Position, Quad, Size } from "../utils/exportVideo/convert";
+import { VideoLayoutKey, videoLayouts } from "../utils/VideoLayoutKey";
+
+export type MetaConfig = {
+  trim?: ConvertConfig["trim"];
+  size: ConvertConfig["size"];
+  layoutKey: VideoLayoutKey;
+};
+
+export const transformConfig = ({ trim, size }: MetaConfig): ConvertConfig => ({
+  trim,
+  size,
+});
+
+export function transformTracks(metaConfig: MetaConfig, event: PlaybackEvent): ConvertTrack[] {
+  const [, slices] = event;
+  const { size, layoutKey } = metaConfig;
+  const videoLayout = videoLayouts[layoutKey];
+  const colsAmount = Math.ceil(Math.sqrt(videoLayout.length));
+  const rowsAmount = Math.ceil(videoLayout.length / colsAmount);
+  const scale = Math.max(colsAmount, rowsAmount);
+  const quads = generateLayoutQuads(size, rowsAmount, colsAmount).map((quad) => map((v) => v / scale, quad));
+  const diretionToQuadMap = zipObj(videoLayout, quads);
+
+  const convertTracks: ConvertTrack[] = values(slices)
+    .map(([sliceTime, clips]) =>
+      videoLayout
+        .map((d) => (clips[d] ? ([d, clips[d]] as const) : null))
+        .filter(isNotNil)
+        .map(
+          ([d, clip]) =>
+            ({
+              duration: [sliceTime, new Date(sliceTime.getTime() + 60 * 1000)],
+              quad: diretionToQuadMap[d],
+              sourceMeta: clip,
+            } satisfies ConvertTrack)
+        )
+    )
+    .flat();
+  return convertTracks;
+}
+
+function generateLayoutPositions(rows: number, cols: number) {
+  const positions: Position[] = [];
+  for (let row = 0; row < rows; row++)
+    for (let col = 0; col < cols; col++)
+      positions.push({
+        x: col,
+        y: row,
+      });
+  return positions;
+}
+
+function generateLayoutQuads(cellSize: Size, rowsAmount: number, colsAmount: number): Quad[] {
+  const positions: Position[] = generateLayoutPositions(rowsAmount, colsAmount);
+  const quads: Quad[] = positions.map(({ x, y }) => ({ x: x * cellSize.w, y: y * cellSize.h })).map((p): Quad => ({ ...p, ...cellSize }));
+  return quads;
+}

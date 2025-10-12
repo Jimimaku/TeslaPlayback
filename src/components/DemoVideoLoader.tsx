@@ -63,7 +63,7 @@ export function DemoVideoLoader({ setFileList }: { setFileList: (fileList: FileL
 
   return (
     <Box>
-      <Button onClick={() => setLoadDemoFilesProgress([[], demoFileLoaders])}>Try with demo files</Button>
+      <Button onClick={() => setLoadDemoFilesProgress([[], demoFileLoaders])}>Preview with demo files</Button>
       {filesToLoad.length > 0 && (
         <Text>
           Loading demo video files: {filesLoaded.length}/{filesToLoad.length}
