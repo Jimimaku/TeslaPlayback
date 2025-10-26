@@ -9,7 +9,7 @@ export type PositionHandlerOptions = PointerHandlerOptions &
 
 export function usePositionHandler(
   onChange: (position: Position2D, e: PointerEvent) => void,
-  { onDragStateChange, onClick, distanceTolerance = 2 }: PositionHandlerOptions = {}
+  { onDragStateChange, onClick, distanceTolerance = 2 }: PositionHandlerOptions = {},
 ) {
   const pointerMoved = useRef(false);
 
@@ -20,7 +20,7 @@ export function usePositionHandler(
       pointerMoved.current ||= dx ** 2 + dy ** 2 > distanceTolerance ** 2;
       onChange(delta, e);
     },
-    [distanceTolerance, onChange]
+    [distanceTolerance, onChange],
   );
 
   const _onPointerUp = useCallback(
@@ -28,7 +28,7 @@ export function usePositionHandler(
       if (!pointerMoved.current) onClick?.(e);
       pointerMoved.current = false;
     },
-    [onClick]
+    [onClick],
   );
 
   return usePointerHandler(_onPointerMove, _onPointerUp, {

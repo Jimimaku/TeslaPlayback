@@ -3,7 +3,7 @@ import { useEffect } from "react";
 export function useWindowPointerEvent(
   pointerEventType: "pointermove" | "pointerup" | "pointerdown",
   onPointerMove: (e: PointerEvent) => void,
-  active = true
+  active = true,
 ) {
   useEffect(() => {
     if (!active) return;

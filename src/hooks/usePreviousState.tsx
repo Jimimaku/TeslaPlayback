@@ -6,7 +6,7 @@ export function usePreviousState<T>(value: T, initialValue: T = value) {
     () => () => {
       setPrev(value);
     },
-    [value]
+    [value],
   );
   return prev;
 }

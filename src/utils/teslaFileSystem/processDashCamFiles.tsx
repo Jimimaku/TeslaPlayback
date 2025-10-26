@@ -43,16 +43,18 @@ export function processDashCamFiles(files: FileListLike): Processed {
 
     const playbackTimestamp = findTimestamp(file.name);
     const splitDirectories = file.webkitRelativePath.split("/");
-    const eventTimestamp =
-      findTimestamp(splitDirectories.at(-2)) ||
-      // for RecentClips, files are not grouped with folders
+    const timestamp1 = findTimestamp(splitDirectories.at(-2));
+    const timestamp2 = // for RecentClips, files are not grouped with folders
       findTimestamp(splitDirectories.at(-1));
-    if (!playbackTimestamp || !eventTimestamp) {
+    const eventTimestamp = timestamp1 ?? timestamp2;
+    // for RecentClips, files are not grouped with folders
+    if (!playbackTimestamp || !eventTimestamp || !timestamp2) {
       parserLog.push({ file, message: `File name does not match expected pattern` });
       continue;
     }
 
     const eventTime = TeslaFS.parseTimestamp(eventTimestamp);
+    const sliceTimestamp = TeslaFS.parseTimestamp(timestamp2);
 
     const category: TeslaFS.ClipCategory =
       TeslaFS.clipCategories.find((category) => splitDirectories.includes(category)) ?? TeslaFS.ClipCategory.Unknown;
@@ -65,7 +67,7 @@ export function processDashCamFiles(files: FileListLike): Processed {
       continue;
     }
 
-    const [, filesMap] = (playbackEventClips[playbackTimestamp] ??= [eventTime, {}]);
+    const [, filesMap] = (playbackEventClips[playbackTimestamp] ??= [sliceTimestamp, {}]);
     const direction = suffixToDirectionMap[match];
     const fileInMap = filesMap[direction];
     if (fileInMap) {
@@ -77,7 +79,7 @@ export function processDashCamFiles(files: FileListLike): Processed {
       });
     }
     filesMap[direction] = file;
-    playbackEventClips[playbackTimestamp] = [eventTime, filesMap];
+    playbackEventClips[playbackTimestamp] = [sliceTimestamp, filesMap];
   }
 
   return {

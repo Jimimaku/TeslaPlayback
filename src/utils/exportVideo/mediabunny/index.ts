@@ -13,7 +13,8 @@ import {
   getFirstEncodableVideoCodec,
 } from "mediabunny";
 import { min, zipWith } from "ramda";
-import { formatDateTime, getBlob } from "../../general";
+import { getBlob } from "../../file";
+import { formatDateTime } from "../../time";
 import { Convert, Size } from "../convert";
 import { CancelSingal } from "./CancelSingal";
 import { drawTextOverlay } from "./text";
@@ -62,7 +63,7 @@ export const convert: Convert = async function (tracksToConvert, config, callbac
               const [trimStart, trimEnd] = trim;
               return start < trimEnd && end > trimStart;
             }
-          : () => true
+          : () => true,
       )
       .map(({ duration }) => duration.map((t) => t.getTime()))
       .map((duration, k): typeof duration => {
@@ -107,7 +108,7 @@ export const convert: Convert = async function (tracksToConvert, config, callbac
           if (!isDuring(timeInReality, +start, +end)) return;
 
           return s?.getSample(timeInVideoS);
-        })
+        }),
       );
 
       for (let k = 0; k < tracksToConvert.length; k++) {

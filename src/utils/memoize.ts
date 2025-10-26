@@ -1,6 +1,6 @@
 export const memoize = <Args extends any[], R>(
   fn: (...args: Args) => R,
-  checkCacheStale?: (args: Args, lastArgs: Args | null) => boolean
+  checkCacheStale?: (args: Args, lastArgs: Args | null) => boolean,
 ): ((...args: Args) => R) => {
   let last: {
     args: Args;

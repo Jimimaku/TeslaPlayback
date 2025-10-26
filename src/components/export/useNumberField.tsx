@@ -8,7 +8,7 @@ export function useNumberField(
   }: {
     min?: number;
     max?: number;
-  } = {}
+  } = {},
 ) {
   return useField({
     initialValue: defaultValue === undefined ? "" : `${defaultValue}`,

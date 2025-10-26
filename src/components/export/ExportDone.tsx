@@ -2,7 +2,7 @@ import { DownloadIcon } from "@primer/octicons-react";
 import { Box, Button } from "@primer/react";
 import { useMemo } from "react";
 import { ExportConvertStateDone } from ".";
-import { downloadBlob } from "../../utils/general";
+import { downloadBlob } from "../../utils/file";
 
 export function ExportDone({
   exportFileName,

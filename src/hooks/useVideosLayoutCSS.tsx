@@ -13,7 +13,7 @@ function generateLayoutMaps<Key extends string>(raw: Record<Key, number[][]>, as
   return Object.entries(raw).reduce((merged, [key, layout]) => {
     const [rows, cols] = layout.reduce(
       ([rows, cols], [col, row, width, height]) => [Math.max(rows, row + height), Math.max(cols, col + width)],
-      [0, 0]
+      [0, 0],
     );
     merged[key] = {
       container: {

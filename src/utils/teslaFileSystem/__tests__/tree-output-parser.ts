@@ -37,7 +37,7 @@ export const treeOutputParser = (output: string): FileListLike => {
       } as File);
       return reduced;
     },
-    [[], [], new Set<string>()] as [string[], File[], Set<string>]
+    [[], [], new Set<string>()] as [string[], File[], Set<string>],
   );
 
   return files.filter((file) => !folders.has(file.webkitRelativePath));

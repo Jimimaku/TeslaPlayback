@@ -13,7 +13,7 @@ export type PointerHandlerOptions = Partial<{
 export function usePointerHandler(
   _onPointerMove: (e: PointerEvent, delta: Position2D) => void,
   _onPointerUp: (e: PointerEvent) => void,
-  { onDragStateChange }: PositionHandlerOptions = {}
+  { onDragStateChange }: PositionHandlerOptions = {},
 ) {
   const [dragState, setDragState] = useState<DragState>("idle");
   const initialPositionRef = useRef<Position2D | null>(null);
@@ -27,7 +27,7 @@ export function usePointerHandler(
       const delta: Position2D = [x1 - x0, y1 - y0];
       _onPointerMove(e, delta);
     },
-    [_onPointerMove]
+    [_onPointerMove],
   );
   const onPointerUp = useCallback(
     (e: PointerEvent) => {
@@ -39,7 +39,7 @@ export function usePointerHandler(
       onDragStateChange?.("idle");
       setDragState("idle");
     },
-    [_onPointerUp, onDragStateChange]
+    [_onPointerUp, onDragStateChange],
   );
 
   useWindowPointerEvent("pointermove", onPointerMove, dragState === "dragging");
@@ -53,7 +53,7 @@ export function usePointerHandler(
       onDragStateChange?.("dragging");
       setDragState("dragging");
     },
-    [onDragStateChange]
+    [onDragStateChange],
   );
 
   return {

@@ -1,20 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { TeslaFS } from "../TeslaFS";
-import { PlaybackEvent } from "../common";
-import { getSortedKeys } from "../utils/general";
+import { PlaybackEvent, PlaybackEventSlice } from "../common";
+import { entries } from "../utils/general";
+
+const getFirstTimestampFromSlices = (slices: Record<string, PlaybackEventSlice>) => {
+  const earliestSlice = entries(slices)
+    .sort(([, [a]], [, [b]]) => +a - +b)
+    .at(0);
+  if (!earliestSlice) {
+    throw new Error("No slices available in the event");
+  }
+  const [timestamp] = earliestSlice;
+  return timestamp;
+};
 
 export function useCurrentEventSlice([, slices]: PlaybackEvent) {
-  const currentEventTimestamps = useMemo(() => getSortedKeys(slices), [slices]);
-  const [currentSliceTimestamp, setCurrentSliceTimestamp] = useState<TeslaFS.Timestamp | null>(null);
-  useEffect(() => {
-    // Only trigger on first load or after manual reset, so this does not set clip index to first when nav with play control
-    const [timestamp] = currentEventTimestamps;
-    setCurrentSliceTimestamp(timestamp ?? null);
-  }, [currentEventTimestamps]);
+  const defaultSliceTimeStamp = useMemo(() => getFirstTimestampFromSlices(slices), [slices]);
+  const [currentSliceTimestamp, setCurrentSliceTimestamp] = useState<TeslaFS.Timestamp>(() => defaultSliceTimeStamp);
 
-  return {
-    currentSliceTimestamp,
-    slice: (currentSliceTimestamp && slices?.[currentSliceTimestamp]) || null,
-    setCurrentSliceTimestamp,
-  };
+  return [currentSliceTimestamp, setCurrentSliceTimestamp, slices[currentSliceTimestamp] ?? slices[defaultSliceTimeStamp]] as const;
 }

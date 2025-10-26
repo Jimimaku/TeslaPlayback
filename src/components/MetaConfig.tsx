@@ -1,6 +1,7 @@
 import { isNotNil, map, values, zipObj } from "ramda";
 import { PlaybackEvent } from "../common";
 import { ConvertConfig, ConvertTrack, Position, Quad, Size } from "../utils/exportVideo/convert";
+import { shiftTime } from "../utils/time";
 import { VideoLayoutKey, videoLayouts } from "../utils/VideoLayoutKey";
 
 export type MetaConfig = {
@@ -22,7 +23,7 @@ export function transformTracks(metaConfig: MetaConfig, event: PlaybackEvent): C
   const rowsAmount = Math.ceil(videoLayout.length / colsAmount);
   const scale = Math.max(colsAmount, rowsAmount);
   const quads = generateLayoutQuads(size, rowsAmount, colsAmount).map((quad) => map((v) => v / scale, quad));
-  const diretionToQuadMap = zipObj(videoLayout, quads);
+  const directionToQuadMap = zipObj(videoLayout, quads);
 
   const convertTracks: ConvertTrack[] = values(slices)
     .map(([sliceTime, clips]) =>
@@ -32,11 +33,11 @@ export function transformTracks(metaConfig: MetaConfig, event: PlaybackEvent): C
         .map(
           ([d, clip]) =>
             ({
-              duration: [sliceTime, new Date(sliceTime.getTime() + 60 * 1000)],
-              quad: diretionToQuadMap[d],
+              duration: [sliceTime, shiftTime(sliceTime, 60 * 1000)],
+              quad: directionToQuadMap[d],
               sourceMeta: clip,
-            } satisfies ConvertTrack)
-        )
+            } satisfies ConvertTrack),
+        ),
     )
     .flat();
   return convertTracks;

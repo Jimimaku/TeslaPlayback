@@ -1,3 +1,5 @@
+type Nullable<T> = T | null | undefined;
+
 type IO<T, V = T> = {
   value: V;
   onChange: (value: T) => void;

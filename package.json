@@ -33,6 +33,7 @@
     "vitest": "^3.2.4"
   },
   "prettier": {
+    "trailingComma": "all",
     "printWidth": 150
   },
   "browserslist": [

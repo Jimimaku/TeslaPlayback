@@ -8,13 +8,11 @@ export enum ExportConfiguringState {
 type ExportConfiguringReducerState =
   | {
       state: ExportConfiguringState.Configuring;
-      trimStart: Date | null;
-      trimEnd: Date | null;
+      trim: [Nullable<Date>, Nullable<Date>];
     }
   | {
       state: ExportConfiguringState.Valid;
-      trimStart: Date;
-      trimEnd: Date;
+      trim: [Date, Date];
     };
 
 type Action<K extends string, T> = {
@@ -38,20 +36,20 @@ type ExportConfigureAction =
  */
 const validateState = (state: ExportConfiguringReducerState): ExportConfiguringReducerState => {
   if (state.state === ExportConfiguringState.Configuring) {
-    const { trimStart, trimEnd } = state;
+    const {
+      trim: [trimStart, trimEnd],
+    } = state;
     if (!trimStart || !trimEnd) {
       return state;
     } else if (trimStart > trimEnd) {
       return {
         state: ExportConfiguringState.Valid,
-        trimStart: trimEnd,
-        trimEnd: trimStart,
+        trim: [trimEnd, trimStart],
       };
     } else {
       return {
         state: ExportConfiguringState.Valid,
-        trimStart,
-        trimEnd,
+        trim: [trimStart, trimEnd],
       };
     }
   }
@@ -61,26 +59,24 @@ const validateState = (state: ExportConfiguringReducerState): ExportConfiguringR
 export function useExportConfigureState() {
   return useReducer(
     (state: ExportConfiguringReducerState, action: ExportConfigureAction): ExportConfiguringReducerState => {
+      const [trimStart, trimEnd] = state.trim;
       switch (action.type) {
         case ExportConfiguringActions.setTrimStart: {
           return validateState({
             state: ExportConfiguringState.Configuring,
-            trimStart: action.payload,
-            trimEnd: state.trimEnd,
+            trim: [action.payload, trimEnd],
           });
         }
         case ExportConfiguringActions.setTrimEnd: {
           return validateState({
             state: ExportConfiguringState.Configuring,
-            trimStart: state.trimStart,
-            trimEnd: action.payload,
+            trim: [trimStart, action.payload],
           });
         }
         case ExportConfiguringActions.reset: {
           return {
             state: ExportConfiguringState.Configuring,
-            trimStart: null,
-            trimEnd: null,
+            trim: [null, null],
           };
         }
       }
@@ -88,8 +84,7 @@ export function useExportConfigureState() {
     },
     {
       state: ExportConfiguringState.Configuring,
-      trimStart: null,
-      trimEnd: null,
-    } satisfies ExportConfiguringReducerState
+      trim: [null, null],
+    } satisfies ExportConfiguringReducerState,
   );
 }

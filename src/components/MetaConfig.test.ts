@@ -18,12 +18,12 @@ test("transformTracks classic", () => {
                 layoutKey: VideoLayoutKey.CLASSIC,
                 size,
               },
-              event
+              event,
             ),
-          category
+          category,
         ),
-      categories
-    )
+      categories,
+    ),
   ).toMatchSnapshot();
 });
 
@@ -38,11 +38,11 @@ test("transformTracks HW4", () => {
                 layoutKey: VideoLayoutKey.HW4,
                 size,
               },
-              event
+              event,
             ),
-          category
+          category,
         ),
-      categories
-    )
+      categories,
+    ),
   ).toMatchSnapshot();
 });

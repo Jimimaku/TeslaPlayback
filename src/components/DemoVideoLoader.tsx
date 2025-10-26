@@ -1,6 +1,7 @@
 import { Box, Button, Text } from "@primer/react";
 import { useEffect, useState } from "react";
-import { $, dataURLtoFile } from "../utils/general";
+import { dataURLtoFile } from "../utils/file";
+import { $ } from "../utils/general";
 
 const loadDemoVideoFile = (videoUrl: string, filePath: string): Promise<File> =>
   Promise.resolve(
@@ -8,7 +9,7 @@ const loadDemoVideoFile = (videoUrl: string, filePath: string): Promise<File> =>
       ? dataURLtoFile(videoUrl, filePath.split("/").pop()!)
       : fetch(videoUrl)
           .then((r) => r.blob())
-          .then((blob) => new File([blob], filePath.split("/").pop()!, { type: "video/mp4" }))
+          .then((blob) => new File([blob], filePath.split("/").pop()!, { type: "video/mp4" })),
   ).then((file) => {
     Object.defineProperty(file, "webkitRelativePath", {
       value: filePath,
@@ -45,7 +46,7 @@ export function DemoVideoLoader({ setFileList }: { setFileList: (fileList: FileL
             const file = await load();
             setLoadDemoFilesProgress(([loaded, totalToLoad]) => [loaded.concat(file), totalToLoad]);
             return file;
-          })
+          }),
         );
         if (aborted) return;
         setFileList(fileList);

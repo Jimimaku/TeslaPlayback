@@ -28,7 +28,7 @@ export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
 
   // events -> current event
   const [currentEventTimestamp, setCurrentEventTimestamp] = useState<TeslaFS.Timestamp | null>(null);
-  const { currentEvent, currentEventTimestamps } = useCurrentEvent(currentEventTimestamp, activeEvents);
+  const { currentEvent } = useCurrentEvent(currentEventTimestamp, activeEvents);
   useEffect(() => {
     const [firstEventTimestamp] = activeEventsTimestamps;
     setCurrentEventTimestamp(firstEventTimestamp ?? null);
@@ -70,7 +70,7 @@ export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
         </Box>
         {/* minWidth for preventing the area grow out of view */}
         <Box as="main" flex="1" minWidth="0">
-          {currentEvent && <EventPlayer currentEvent={currentEvent} currentEventTimestamps={currentEventTimestamps} />}
+          {currentEvent && <EventPlayer currentEvent={currentEvent} />}
         </Box>
       </Box>
     </>

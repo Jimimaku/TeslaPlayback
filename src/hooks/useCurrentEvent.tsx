@@ -5,7 +5,7 @@ import { getSortedKeys } from "../utils/general";
 export function useCurrentEvent(currentEventTimestamp: string | null, playbackEvents: PlaybackEvents) {
   const currentEvent = useMemo(
     () => (currentEventTimestamp && playbackEvents[currentEventTimestamp]) || null,
-    [currentEventTimestamp, playbackEvents]
+    [currentEventTimestamp, playbackEvents],
   );
   const currentEventTimestamps = useMemo(() => {
     if (currentEvent) {

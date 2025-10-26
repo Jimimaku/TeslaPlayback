@@ -13,9 +13,9 @@ export const videoLayouts = {
   [VideoLayoutKey.HW4]: [Directions.left, Directions.front, Directions.right, Directions.leftPillar, Directions.rear, Directions.rightPillar],
 };
 
-export const resolveSliceLayoutKey = (slice: PlaybackEventSlice) => (hasPillarClip(slice) ? VideoLayoutKey.HW4 : VideoLayoutKey.CLASSIC);
-
 const hasPillarClip = (slice: PlaybackEventSlice) => {
   const { left_pillar, right_pillar } = getClipFiles(slice);
   return !!(left_pillar ?? right_pillar);
 };
+
+export const resolveSliceLayoutKey = (slice: PlaybackEventSlice) => (hasPillarClip(slice) ? VideoLayoutKey.HW4 : VideoLayoutKey.CLASSIC);

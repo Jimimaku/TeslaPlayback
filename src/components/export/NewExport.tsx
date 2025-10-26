@@ -5,7 +5,8 @@ import { ExportConvertState } from ".";
 import { PlaybackEvent } from "../../common";
 import { EventHub } from "../../utils/EventHub";
 import { ConvertConfig, ConvertTrack, loadConverter, Progress } from "../../utils/exportVideo/convert";
-import { $, formatDateTime } from "../../utils/general";
+import { $ } from "../../utils/general";
+import { formatDateTime } from "../../utils/time";
 import { ExportDone } from "./ExportDone";
 import { ExportFail } from "./ExportFail";
 import { ExportProcessing } from "./ExportProcessing";
@@ -54,7 +55,7 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onFinish
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       /* convertConfig, convertTracks */
-    ]
+    ],
   );
 
   switch (exportState.state) {

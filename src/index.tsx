@@ -7,5 +7,5 @@ if (appElement)
   createRoot(appElement).render(
     <ErrorBoundary>
       <App />
-    </ErrorBoundary>
+    </ErrorBoundary>,
   );

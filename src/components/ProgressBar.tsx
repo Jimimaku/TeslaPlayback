@@ -12,7 +12,7 @@ export type ProgressBarProps = {
   range?: [total: number, start: number, end: number];
   onStartChange?(value: number, progress: [number, number]): void;
   onEndChange?(value: number, progress: [number, number]): void;
-  onDragStart?(endPromise: Promise<void>): void;
+  onDrag?(endPromise: Promise<void>): void;
   native?: InputHTMLAttributes<HTMLProgressElement>;
 } & SxProp;
 
@@ -84,10 +84,10 @@ const ProgressBarPositioner = ({ value, children, boxProps }: CaretProps) => (
   </Box>
 );
 
-export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChange, onEndChange, onDragStart, sx }: ProgressBarProps) {
+export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChange, onEndChange, onDrag, sx }: ProgressBarProps) {
   const [total, start, end] = range ?? [];
 
-  const onStartCaretDragStateChange = useMemo(() => createOnDragStart(onDragStart), [onDragStart]);
+  const onStartCaretDragStateChange = useMemo(() => createOnDragStart(onDrag), [onDrag]);
   const { onPointerDown: onStartCaretPointerDown } = usePositionHandler(
     (_, e) => {
       if (end == null) return;
@@ -97,7 +97,7 @@ export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChan
     },
     {
       onDragStateChange: onStartCaretDragStateChange,
-    }
+    },
   );
   const startCaret = start != null && total != null && (
     <ProgressBarPositioner
@@ -119,7 +119,7 @@ export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChan
     </ProgressBarPositioner>
   );
 
-  const onEndCaretDragStateChange = useMemo(() => createOnDragStart(onDragStart), [onDragStart]);
+  const onEndCaretDragStateChange = useMemo(() => createOnDragStart(onDrag), [onDrag]);
   const { onPointerDown: onEndCaretPointerDown } = usePositionHandler(
     (_, e) => {
       if (start == null) return;
@@ -129,7 +129,7 @@ export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChan
     },
     {
       onDragStateChange: onEndCaretDragStateChange,
-    }
+    },
   );
   const endCaret = end != null && total != null && (
     <ProgressBarPositioner
@@ -173,7 +173,7 @@ export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChan
     (/* e: React.PointerEvent */) => {
       progressBarControlRef.current?.resolve();
       progressBarControlRef.current = null;
-    }
+    },
   );
 
   const activeArea = start != null && end != null && total != null && (
@@ -196,13 +196,13 @@ export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChan
       juxt([
         (e: React.PointerEvent) => {
           progressBarControlRef.current = createControlledPromise<void>();
-          onDragStart?.(progressBarControlRef.current.promise);
+          onDrag?.(progressBarControlRef.current.promise);
 
           onChange?.(Math.max(0, Math.min(1, getRelativePointerPosition(e.nativeEvent))));
         },
         onProgressPointerDown,
       ]),
-    [onChange, onDragStart, onProgressPointerDown, getRelativePointerPosition]
+    [onChange, onDrag, onProgressPointerDown, getRelativePointerPosition],
   );
 
   const progressBarControlRef = useRef<ControlledPromise<void> | null>(null);
