@@ -39,7 +39,7 @@ export function useVideoControl() {
     setPlayEnded((prev) => newStates.playEnded ?? prev);
     setDuration((prev) => newStates.duration ?? prev);
     setPlaytime((prev) => newStates.playtime ?? prev);
-    setError((prev) => newStates.error ?? prev);
+    setError((prev) => ("error" in newStates ? newStates.error ?? null : prev));
   }, []);
 
   return useMemo(() => ({ states, setStates }), [states, setStates]);

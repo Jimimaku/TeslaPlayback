@@ -95,7 +95,7 @@ export const Video: FC<Props> = ({ file, label, playbackRate = 1, native, play, 
           onContextMenu={(e) => e.preventDefault()}
           autoPlay
           onCanPlay={(e) => {
-            control.setStates({ initialing: false, canPlay: true, duration: e.currentTarget.duration * 1000 });
+            control.setStates({ initialing: false, canPlay: true, duration: e.currentTarget.duration * 1000, error: null });
           }}
           onError={(e) => {
             control.setStates({ initialing: false, canPlay: true, error: e.currentTarget.error });
