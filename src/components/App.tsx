@@ -26,7 +26,7 @@ export function App() {
   return (
     <ThemeProvider colorMode="auto">
       <BaseStyles>
-        <Box display="flex" flexDirection="column" sx={{ gap: 1 }} bg={"canvas.default"}>
+        <Box display="flex" flexDirection="column" sx={{ gap: 0 }} bg={"canvas.default"}>
           <Header sx={{ whiteSpace: "nowrap", flexWrap: "wrap" }}>
             <Heading as={"h1"} sx={{ fontSize: 24, marginRight: 2 }}>
               Tesla Playback
@@ -45,7 +45,14 @@ export function App() {
               </Header.Link>
             </Header.Item>
           </Header>
-          <Box as="section" display="inline-flex" flexDirection="column" padding={3} overflow="auto" sx={{ gap: 3 }}>
+          <Box
+            as="section"
+            display="inline-flex"
+            flexDirection="column"
+            padding={3}
+            overflow="auto"
+            sx={{ gap: 3, ["--available-height"]: "calc(100vh - 68px)" }}
+          >
             <ErrorBoundary>
               {fileList && fileList.length > 0 ? (
                 <>

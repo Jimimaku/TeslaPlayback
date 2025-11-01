@@ -15,3 +15,15 @@ export const mapAndFind = <T, R>(arr: T[], fn: (item: T, index: number, array: T
     if (res != null) return res;
   }
 };
+
+export const withDebugger =
+  <Args extends any[], R>(fn: (...args: Args) => R) =>
+  (...args: Args): R => {
+    const result = fn(...args);
+    // eslint-disable-next-line no-debugger
+    debugger;
+    return result;
+  };
+
+export const mapNaN = (v: number) => (Number.isNaN(v) ? 0 : v);
+export const mapInfinity = (v: number) => (v === Infinity || v === -Infinity ? 0 : v);

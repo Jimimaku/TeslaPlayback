@@ -1,4 +1,4 @@
-export class CancelSingal {
+export class CancelSignal {
   private _isCanceled = false;
   get isCanceled() {
     return this._isCanceled;

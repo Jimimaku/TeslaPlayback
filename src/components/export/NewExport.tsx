@@ -5,6 +5,7 @@ import { ExportConvertState } from ".";
 import { PlaybackEvent } from "../../common";
 import { EventHub } from "../../utils/EventHub";
 import { ConvertConfig, ConvertTrack, loadConverter, Progress } from "../../utils/exportVideo/convert";
+import { flowControlErrors } from "../../utils/exportVideo/mediabunny";
 import { $ } from "../../utils/general";
 import { formatDateTime } from "../../utils/time";
 import { ExportDone } from "./ExportDone";
@@ -15,10 +16,11 @@ type Props = {
   event: PlaybackEvent;
   convertConfig: ConvertConfig;
   convertTracks: ConvertTrack[];
+  onCancel?: () => void;
   onFinish?: () => void;
 };
 
-export function NewVideoExporter({ event, convertConfig, convertTracks, onFinish }: Props) {
+export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel, onFinish }: Props) {
   const [eventTime] = event;
   const [exportState, setExportState] = useState<ExportConvertState>({
     state: "loadingConverter",
@@ -32,7 +34,7 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onFinish
 
           const progressHub = new EventHub<Progress>();
           const convert = await loadConverter();
-          const { cancel, result } = await convert(convertTracks, convertConfig, {
+          const { cancel, result } = convert(convertTracks, convertConfig, {
             onProgress: progressHub.dispatch,
             onError: juxt([console.error, (error: unknown) => setExportState({ state: "fail", reason: `Failed processing video: ${error}` })]),
           });
@@ -46,6 +48,10 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onFinish
           const output = await result;
           setExportState({ state: "done", getOutput: () => output });
         } catch (err) {
+          if (err instanceof flowControlErrors.CancelError) {
+            onCancel?.();
+            return;
+          }
           console.error(err);
           setExportState({ state: "fail", reason: `Failed processing video: ${err}` });
         }

@@ -69,10 +69,11 @@ const TriangleCaret: FC<
 
 const ProgressBarPositioner = ({ value, children, boxProps }: CaretProps) => (
   <Box
+    {...boxProps}
     style={{
       left: (value * 100).toFixed(2) + "%",
+      ...boxProps?.style,
     }}
-    {...boxProps}
     sx={{
       position: "absolute",
       top: 0,

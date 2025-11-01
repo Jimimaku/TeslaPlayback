@@ -1,5 +1,5 @@
 import { all, isNotNil } from "ramda";
-import { FC, useMemo, useRef, useState } from "react";
+import { ComponentProps, FC, useCallback, useMemo, useRef, useState } from "react";
 import { getEventTime, PlaybackEvent } from "../common";
 import { ExportConfig } from "./ExportConfig";
 import { MatrixPlayer, PlayControl } from "./MatrixPlayer";
@@ -11,7 +11,6 @@ import { useEventLayoutKey } from "./useEventLayoutKey";
 export const EventPlayer: FC<{
   currentEvent: PlaybackEvent;
 }> = ({ currentEvent }) => {
-  const [playTime, setPlayTime] = useState<Date | null>(null);
   const matrixPlayControlRef = useRef<PlayControl | null>(null);
 
   const videoLayoutKey = useEventLayoutKey(currentEvent);
@@ -31,6 +30,14 @@ export const EventPlayer: FC<{
 
   const [exportState, setExportState] = useState<ExportState>(ExportState.Idle);
 
+  const setTrim = useCallback<Required<ComponentProps<typeof MatrixPlayer>>["setTrim"]>(
+    ([start, end]) => {
+      if (start) dispatchExportConfiguringState({ type: ExportConfiguringActions.setTrimStart, payload: start });
+      if (end) dispatchExportConfiguringState({ type: ExportConfiguringActions.setTrimEnd, payload: end });
+    },
+    [dispatchExportConfiguringState],
+  );
+
   return (
     <>
       <ExportConfig
@@ -40,23 +47,14 @@ export const EventPlayer: FC<{
         setExportState={setExportState}
         matrixPlayControlRef={matrixPlayControlRef}
         metaConfig={metaConfig}
-        playTime={playTime}
       />
       <MatrixPlayer
         key={getEventTime(currentEvent).toISOString() /* Force remount when event changes */}
         ref={matrixPlayControlRef}
-        onPlayTimeChange={setPlayTime}
         videoLayoutKey={videoLayoutKey}
         event={currentEvent}
         trim={exportState === ExportState.Configuring ? trim : undefined}
-        setTrim={
-          exportState === ExportState.Configuring
-            ? ([start, end]) => {
-                if (start) dispatchExportConfiguringState({ type: ExportConfiguringActions.setTrimStart, payload: start });
-                if (end) dispatchExportConfiguringState({ type: ExportConfiguringActions.setTrimEnd, payload: end });
-              }
-            : undefined
-        }
+        setTrim={exportState === ExportState.Configuring ? setTrim : undefined}
       />
     </>
   );

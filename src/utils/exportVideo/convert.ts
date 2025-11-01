@@ -24,17 +24,16 @@ export interface Quad extends Position, Size {}
 export interface ConvertTrack {
   sourceMeta: string | File;
   quad: Quad;
-  duration: [Date, Date]; // enhancement: end time can be omit and resolved after loading actual video
+  startTime: Date;
 }
 
 export interface ConvertCallbacks {
-  // TODO: add preview callback
   onProgress: (progress: Progress) => void;
   onError: (error: Error | undefined) => void;
 }
 
 export interface Convert {
-  (tracks: ConvertTrack[], config: ConvertConfig, callbacks: ConvertCallbacks): Promise<CancelableJob<Blob>>;
+  (tracks: ConvertTrack[], config: ConvertConfig, callbacks: ConvertCallbacks): CancelableJob<Blob>;
 }
 
 export type Progress = number;

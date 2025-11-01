@@ -1,7 +1,6 @@
 import { isNotNil, map, values, zipObj } from "ramda";
 import { PlaybackEvent } from "../common";
 import { ConvertConfig, ConvertTrack, Position, Quad, Size } from "../utils/exportVideo/convert";
-import { shiftTime } from "../utils/time";
 import { VideoLayoutKey, videoLayouts } from "../utils/VideoLayoutKey";
 
 export type MetaConfig = {
@@ -31,12 +30,11 @@ export function transformTracks(metaConfig: MetaConfig, event: PlaybackEvent): C
         .map((d) => (clips[d] ? ([d, clips[d]] as const) : null))
         .filter(isNotNil)
         .map(
-          ([d, clip]) =>
-            ({
-              duration: [sliceTime, shiftTime(sliceTime, 60 * 1000)],
-              quad: directionToQuadMap[d],
-              sourceMeta: clip,
-            } satisfies ConvertTrack),
+          ([d, clip]): ConvertTrack => ({
+            startTime: sliceTime,
+            quad: directionToQuadMap[d],
+            sourceMeta: clip,
+          }),
         ),
     )
     .flat();

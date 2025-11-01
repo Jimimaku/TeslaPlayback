@@ -37,3 +37,7 @@ export const formatTime = (time: Date) => {
 
 export const shiftTime = (time: Date, shiftMs: number) => new Date(+time + shiftMs);
 export const timeSubtract = (a: Date, b: Date) => +a - +b;
+
+export const later = (a: Date, b: Date) => (a > b ? a : b);
+export const earlier = (a: Date, b: Date) => (a < b ? a : b);
+export const isDuring = (time: Date | number, start: Date | number, end: Date | number) => time >= start && time <= end;

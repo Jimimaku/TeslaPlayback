@@ -11,16 +11,14 @@ export const ExportConfig: React.FC<{
   exportConfiguringState: ReturnType<typeof useExportConfigureState>[0];
   matrixPlayControlRef: React.RefObject<PlayControl>;
   metaConfig: MetaConfig;
-  playTime: Date | null;
   exportState: ExportState;
   setExportState: React.Dispatch<React.SetStateAction<ExportState>>;
-}> = ({ currentEvent, exportConfiguringState, exportState, matrixPlayControlRef, metaConfig, playTime, setExportState }) => {
+}> = ({ currentEvent, exportConfiguringState, exportState, matrixPlayControlRef, metaConfig, setExportState }) => {
   switch (exportState) {
     case ExportState.Idle: {
       return <Button onClick={() => setExportState(ExportState.Configuring)}>Export Video</Button>;
     }
     case ExportState.Configuring: {
-      if (playTime === null) return null;
       return (
         <Box display="flex" gap={2} alignItems="center">
           {exportConfiguringState.state === ExportConfiguringState.Valid && (
@@ -53,6 +51,7 @@ export const ExportConfig: React.FC<{
           convertConfig={transformConfig(metaConfig)}
           convertTracks={transformTracks(metaConfig, currentEvent)}
           onFinish={() => setExportState(ExportState.Idle)}
+          onCancel={() => setExportState(ExportState.Configuring)}
         />
       );
     }
