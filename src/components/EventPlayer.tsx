@@ -1,5 +1,5 @@
 import { all, isNotNil } from "ramda";
-import { ComponentProps, FC, useCallback, useMemo, useRef, useState } from "react";
+import { ComponentProps, FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getEventTime, PlaybackEvent } from "../common";
 import { ExportConfig } from "./ExportConfig";
 import { MatrixPlayer, PlayControl } from "./MatrixPlayer";
@@ -11,8 +11,6 @@ import { useEventLayoutKey } from "./useEventLayoutKey";
 export const EventPlayer: FC<{
   currentEvent: PlaybackEvent;
 }> = ({ currentEvent }) => {
-  const matrixPlayControlRef = useRef<PlayControl | null>(null);
-
   const videoLayoutKey = useEventLayoutKey(currentEvent);
   const [exportConfiguringState, dispatchExportConfiguringState] = useExportConfigureState();
   const { trim } = exportConfiguringState;
@@ -28,7 +26,11 @@ export const EventPlayer: FC<{
     [trim, videoLayoutKey],
   );
 
+  const matrixPlayControlRef = useRef<PlayControl | null>(null);
   const [exportState, setExportState] = useState<ExportState>(ExportState.Idle);
+  useEffect(() => {
+    if (exportState === ExportState.Converting) matrixPlayControlRef.current?.pause();
+  }, [exportState]);
 
   const setTrim = useCallback<Required<ComponentProps<typeof MatrixPlayer>>["setTrim"]>(
     ([start, end]) => {
@@ -39,23 +41,16 @@ export const EventPlayer: FC<{
   );
 
   return (
-    <>
-      <ExportConfig
-        currentEvent={currentEvent}
-        exportConfiguringState={exportConfiguringState}
-        exportState={exportState}
-        setExportState={setExportState}
-        matrixPlayControlRef={matrixPlayControlRef}
-        metaConfig={metaConfig}
-      />
-      <MatrixPlayer
-        key={getEventTime(currentEvent).toISOString() /* Force remount when event changes */}
-        ref={matrixPlayControlRef}
-        videoLayoutKey={videoLayoutKey}
-        event={currentEvent}
-        trim={exportState === ExportState.Configuring ? trim : undefined}
-        setTrim={exportState === ExportState.Configuring ? setTrim : undefined}
-      />
-    </>
+    <MatrixPlayer
+      key={getEventTime(currentEvent).toISOString() /* Force remount when event changes */}
+      ref={matrixPlayControlRef}
+      additionalControls={
+        <ExportConfig currentEvent={currentEvent} exportState={exportState} setExportState={setExportState} metaConfig={metaConfig} />
+      }
+      videoLayoutKey={videoLayoutKey}
+      event={currentEvent}
+      trim={exportState === ExportState.Configuring || exportState === ExportState.Converting ? trim : undefined}
+      setTrim={exportState === ExportState.Configuring || exportState === ExportState.Converting ? setTrim : undefined}
+    />
   );
 };

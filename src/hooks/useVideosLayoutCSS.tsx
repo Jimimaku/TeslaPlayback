@@ -18,7 +18,7 @@ function generateLayoutMaps<Key extends string>(raw: Record<Key, number[][]>, as
     merged[key] = {
       container: {
         width: "100%",
-        height: `${(100 * rows * aspectRatio) / cols}%`,
+        paddingTop: `${(100 * rows * aspectRatio) / cols}%`,
         display: "grid",
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
         gridTemplateRows: `repeat(${rows}, 1fr)`,

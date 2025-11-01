@@ -1,20 +1,18 @@
-import { Button } from "@primer/react";
+import { Button, ButtonProps } from "@primer/react";
 import { InputHTMLAttributes, PropsWithChildren, useRef } from "react";
 
-export function LoadFilesButton({
-  onLoad,
-  selectDir,
-  inputProps,
-  children,
-}: PropsWithChildren<{
+type Props = PropsWithChildren<{
   onLoad: (files: FileList | null) => void;
   selectDir?: boolean;
   inputProps?: Partial<InputHTMLAttributes<HTMLInputElement>>;
-}>) {
+}> &
+  Pick<ButtonProps, "variant">;
+
+export const LoadFilesButton = ({ onLoad, selectDir, inputProps, variant, children }: Props) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   return (
     <>
-      <Button variant={"primary"} onClick={() => inputRef.current?.click()}>
+      <Button variant={variant} onClick={() => inputRef.current?.click()}>
         {children}
       </Button>
       <input
@@ -31,4 +29,4 @@ export function LoadFilesButton({
       />
     </>
   );
-}
+};

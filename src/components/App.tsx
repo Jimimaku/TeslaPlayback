@@ -14,6 +14,7 @@ export function App() {
     <LoadFilesButton
       onLoad={setFileList}
       selectDir
+      variant={fileList && fileList.length > 0 ? "default" : "primary"}
       inputProps={{
         multiple: true,
         accept: "video/mp4,video/x-m4v,video/*",
@@ -23,62 +24,66 @@ export function App() {
     </LoadFilesButton>
   );
 
+  const maxWidth = 1280;
+
   return (
     <ThemeProvider colorMode="auto">
       <BaseStyles>
-        <Box display="flex" flexDirection="column" sx={{ gap: 0 }} bg={"canvas.default"}>
-          <Header sx={{ whiteSpace: "nowrap", flexWrap: "wrap" }}>
-            <Heading as={"h1"} sx={{ fontSize: 24, marginRight: 2 }}>
-              Tesla Playback
-            </Heading>
-            <Header.Item>
-              <Text sx={{ marginTop: "8px", fontSize: 12 }}>View, trim, merge, and export Tesla DashCam video.</Text>
-            </Header.Item>
-            <Header.Item full />
-            <Header.Item>
-              <Text>Crafted by EnixCoda</Text>
-              <Header.Link sx={{ marginLeft: 2 }} target="_blank" href="https://github.com/EnixCoda" title="GitHub">
-                <MarkGithubIcon />
-              </Header.Link>
-              <Header.Link sx={{ marginLeft: 2 }} target="_blank" href="mailto:enixcoda@gmail.com" title="Feedback">
-                <MailIcon />
-              </Header.Link>
-            </Header.Item>
-          </Header>
-          <Box
-            as="section"
-            display="inline-flex"
-            flexDirection="column"
-            padding={3}
-            overflow="auto"
-            sx={{ gap: 3, ["--available-height"]: "calc(100vh - 68px)" }}
-          >
-            <ErrorBoundary>
+        <Box display="flex" flexDirection="column" alignItems="center" bg={"canvas.default"}>
+          <Box display="inline-flex" justifyContent="center" bg="header.bg" width="100%">
+            <Header sx={{ whiteSpace: "nowrap", flexWrap: "wrap", width: "100%", maxWidth: maxWidth }}>
+              <Heading as={"h1"} sx={{ fontSize: 24, marginRight: 2 }}>
+                Tesla Playback
+              </Heading>
+              <Header.Item>
+                <Text sx={{ marginTop: "8px", fontSize: 12 }}>View, trim, merge, and export Tesla DashCam video.</Text>
+              </Header.Item>
+              <Header.Item full />
+              <Header.Item>
+                <Text>Crafted by EnixCoda</Text>
+                <Header.Link sx={{ marginLeft: 2 }} target="_blank" href="https://github.com/EnixCoda" title="GitHub">
+                  <MarkGithubIcon />
+                </Header.Link>
+                <Header.Link sx={{ marginLeft: 2 }} target="_blank" href="mailto:enixcoda@gmail.com" title="Feedback">
+                  <MailIcon />
+                </Header.Link>
+              </Header.Item>
+            </Header>
+          </Box>
+          <ErrorBoundary>
+            <Box display="contents">
               {fileList && fileList.length > 0 ? (
-                <>
-                  <Box>{loadFilesButton}</Box>
-                  <DashCamBrowser fileList={fileList} />
-                </>
+                <Box width="100%" maxWidth={maxWidth} display="flex" padding={3}>
+                  <DashCamBrowser loadFilesButton={loadFilesButton} fileList={fileList} />
+                </Box>
               ) : (
-                <Box display="inline-flex" flexDirection="column" maxWidth={640} sx={{ gap: 2 }}>
-                  <img src={stepsDiagram} alt="Steps to use Tesla Playback" />
-                  <Box display="flex" flexDirection="row" sx={{ gap: 2, alignItems: "center" }}>
-                    {loadFilesButton}
-                    <DemoVideoLoader setFileList={setFileList} />
-                  </Box>
-                  <Box>
-                    <Heading as="h2" sx={{ fontSize: 2, margin: 1 }}>
-                      Note
-                    </Heading>
-                    <Text as="p" sx={{ marginTop: 0 }}>
-                      All video files will be processed locally offline. No files will be uploaded. If your browser prompts about uploading files,
-                      please ignore it. For additional security, you may disconnect from internet before you proceed.
-                    </Text>
+                <Box
+                  display="inline-flex"
+                  sx={{
+                    width: "100%",
+                    maxWidth: maxWidth,
+                  }}
+                >
+                  <Box display="inline-flex" flexDirection="column" padding={3} maxWidth={800} sx={{ gap: 2 }}>
+                    <img src={stepsDiagram} alt="Steps to use Tesla Playback" />
+                    <Box display="flex" flexDirection="row" sx={{ gap: 2, alignItems: "center" }}>
+                      {loadFilesButton}
+                      <DemoVideoLoader setFileList={setFileList} />
+                    </Box>
+                    <Box>
+                      <Heading as="h2" sx={{ fontSize: 2, margin: 1 }}>
+                        Note
+                      </Heading>
+                      <Text as="p" sx={{ marginTop: 0 }}>
+                        All video files will be processed locally offline. No files will be uploaded. If your browser prompts about uploading files,
+                        please ignore it. For additional security, you may disconnect from internet before you proceed.
+                      </Text>
+                    </Box>
                   </Box>
                 </Box>
               )}
-            </ErrorBoundary>
-          </Box>
+            </Box>
+          </ErrorBoundary>
         </Box>
       </BaseStyles>
     </ThemeProvider>

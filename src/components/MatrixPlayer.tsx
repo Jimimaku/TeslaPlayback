@@ -23,13 +23,14 @@ type Props = {
   videoLayoutKey: VideoLayoutKey;
   trim?: [Nullable<Date>, Nullable<Date>];
   setTrim?: (trim: Required<Props>["trim"]) => void;
+  additionalControls?: React.ReactNode;
 };
 
 export type PlayControl = {
   pause: () => void;
 };
 
-export const MatrixPlayer = forwardRef<PlayControl, Props>(({ event, videoLayoutKey, trim, setTrim }, ref) => {
+export const MatrixPlayer = forwardRef<PlayControl, Props>(({ event, videoLayoutKey, trim, setTrim, additionalControls }, ref) => {
   const mergedEvent = useMemo(() => mergeEvent(event), [event]);
   const { start: eventStart, end: eventEnd } = mergedEvent;
   const eventDuration = timeSubtract(eventEnd, eventStart);
@@ -95,7 +96,7 @@ export const MatrixPlayer = forwardRef<PlayControl, Props>(({ event, videoLayout
   }, [setTrim, eventStart, eventEnd]);
 
   return (
-    <Box display="flex" flexDirection="column" border="1px solid transparent" borderColor={"canvas.default"} sx={{ gap: 4 }}>
+    <Box display="flex" flexDirection="column" border="1px solid transparent" borderColor={"canvas.default"} sx={{ gap: 2 }}>
       <Box display="inline-flex" alignItems="center" sx={{ gap: 3, "> *": { flexShrink: 0 } }} flexWrap="wrap">
         <Box display="inline-flex" alignItems="center" flex="1" sx={{ gap: 3 }}>
           {isPlaying ? (
@@ -152,14 +153,26 @@ export const MatrixPlayer = forwardRef<PlayControl, Props>(({ event, videoLayout
             <PlaybackRateControl playbackRate={playbackRate} setPlaybackRate={setPlaybackRate} />
           </Box>
         )}
+        {additionalControls}
       </Box>
-      <Box bg="neutral.muted" position="relative" borderWidth={1} borderStyle="solid" borderColor="border.default" borderRadius={4}>
+      <Box
+        display="flex"
+        flexDirection="column"
+        flex="1"
+        minHeight="0"
+        bg="neutral.muted"
+        position="relative"
+        borderWidth={1}
+        borderStyle="solid"
+        borderColor="border.default"
+        borderRadius={4}
+      >
         <Box p={0} bg="#000" lineHeight="1" display="flex" justifyContent="center" alignItems="center">
           <Text color="#fff" fontFamily="mono" fontSize="18px">
             {formatDateTime(shiftTime(sliceTime, slicePlaytime))}
           </Text>
         </Box>
-        <Box position="relative">
+        <Box flex="1" display="flex" flexDirection="column" minHeight="0">
           <LayoutComposer
             style={layoutCSS.container}
             decorator={(element, index) =>

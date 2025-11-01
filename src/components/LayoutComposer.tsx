@@ -13,9 +13,21 @@ export function LayoutComposer({
   decorator: (element: ReactElement, index: number) => DecoratableReactElement;
   style?: CSSProperties;
 }) {
+  const { width, paddingTop, ...restStyle } = style ?? {};
   return (
-    <div style={{ display: "flex", position: "relative", ...style }}>
-      {Children.map(Children.toArray(children), (child, index) => (isValidElement(child) && child.key !== null ? decorator(child, index) : child))}
+    <div
+      style={{
+        display: "flex",
+        position: "relative",
+        width,
+        paddingTop,
+        flex: 1,
+        minHeight: 0,
+      }}
+    >
+      <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", ...restStyle }}>
+        {Children.map(Children.toArray(children), (child, index) => (isValidElement(child) && child.key !== null ? decorator(child, index) : child))}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { Box, CounterLabel } from "@primer/react";
 import { pipe } from "ramda";
-import { useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { TeslaFS } from "../TeslaFS";
 import { PlaybackEvents } from "../common";
 import { useCurrentEvent } from "../hooks/useCurrentEvent";
@@ -12,7 +12,12 @@ import { SubNavs } from "./SubNavs";
 import { TimestampSelect } from "./TimestampSelect";
 import { FormSelect } from "./base/Select";
 
-export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
+type Props = {
+  loadFilesButton: React.ReactNode;
+  fileList: FileListLike;
+};
+
+export const DashCamBrowser: FC<Props> = ({ loadFilesButton, fileList }) => {
   // files -> categories
   const { categories, parserLog } = useMemo(() => processDashCamFiles(fileList), [fileList]);
 
@@ -35,44 +40,50 @@ export function DashCamBrowser({ fileList }: { fileList: FileListLike }) {
   }, [activeEventsTimestamps]);
 
   return (
-    <>
+    <Box
+      width="100%"
+      flex="1"
+      display="flex"
+      justifyContent={["unset", "unset", "center"]}
+      flexDirection={["column", "column", "row"]}
+      sx={{ gap: 3 }}
+    >
       {parserLog.length > 0 && <ParserLogViewer parserLog={parserLog} />}
-      <Box display="flex" flexDirection={["column", "column", "row"]} sx={{ gap: 1 }} overflow="auto">
-        <Box as="nav" display="inline-flex" flexDirection="column" sx={{ gap: 2 }}>
-          {categoryList.length > 1 && <SubNavs options={categoryList} value={activeCategory} onChange={setActiveCategory} />}
-          <Box display="flex" flexWrap={["wrap", "nowrap", "nowrap"]} sx={{ gap: 1 }}>
-            <TimestampSelect
-              sx={{ display: ["none", "none", "flex"] }}
-              label={
-                <>
-                  Events <CounterLabel>{activeEventsTimestamps.length}</CounterLabel>
-                </>
-              }
-              innerSx={{ maxHeight: 600, overflowY: "auto" }}
-              options={activeEventsTimestamps}
-              renderOption={pipe(({ value }) => value, TeslaFS.formatTimestamp)}
-              value={currentEventTimestamp}
-              onChange={setCurrentEventTimestamp}
-            />
-            <FormSelect
-              sx={{ display: ["flex", "flex", "none"] }}
-              label={
-                <>
-                  Events <CounterLabel>{activeEventsTimestamps.length}</CounterLabel>
-                </>
-              }
-              options={activeEventsTimestamps}
-              renderOption={pipe(({ value }) => value, TeslaFS.formatTimestamp)}
-              value={currentEventTimestamp}
-              onChange={setCurrentEventTimestamp}
-            />
-          </Box>
-        </Box>
-        {/* minWidth for preventing the area grow out of view */}
-        <Box as="main" flex="1" minWidth="0">
-          {currentEvent && <EventPlayer currentEvent={currentEvent} />}
+      <Box as="nav" display="inline-flex" flexDirection="column" sx={{ gap: 2 }}>
+        {loadFilesButton}
+        {categoryList.length > 1 && <SubNavs options={categoryList} value={activeCategory} onChange={setActiveCategory} />}
+        <Box display="flex" flexWrap={["wrap", "nowrap", "nowrap"]} sx={{ gap: 1 }}>
+          <TimestampSelect
+            sx={{ display: ["none", "none", "flex"] }}
+            label={
+              <>
+                Events <CounterLabel>{activeEventsTimestamps.length}</CounterLabel>
+              </>
+            }
+            innerSx={{ maxHeight: 600, overflowY: "auto" }}
+            options={activeEventsTimestamps}
+            renderOption={pipe(({ value }) => value, TeslaFS.formatTimestamp)}
+            value={currentEventTimestamp}
+            onChange={setCurrentEventTimestamp}
+          />
+          <FormSelect
+            sx={{ display: ["flex", "flex", "none"] }}
+            label={
+              <>
+                Events <CounterLabel>{activeEventsTimestamps.length}</CounterLabel>
+              </>
+            }
+            options={activeEventsTimestamps}
+            renderOption={pipe(({ value }) => value, TeslaFS.formatTimestamp)}
+            value={currentEventTimestamp}
+            onChange={setCurrentEventTimestamp}
+          />
         </Box>
       </Box>
-    </>
+      {/* minWidth for preventing the area grow out of view */}
+      <Box as="main" flex="1">
+        {currentEvent && <EventPlayer currentEvent={currentEvent} />}
+      </Box>
+    </Box>
   );
-}
+};

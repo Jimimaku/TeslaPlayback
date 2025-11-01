@@ -28,6 +28,8 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
 
   useEffect(
     () => {
+      let cancelEffect: (() => void) | null = null;
+
       $(async () => {
         try {
           setExportState({ state: "loadingConverter" });
@@ -38,6 +40,8 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
             onProgress: progressHub.dispatch,
             onError: juxt([console.error, (error: unknown) => setExportState({ state: "fail", reason: `Failed processing video: ${error}` })]),
           });
+
+          cancelEffect = cancel;
 
           setExportState({
             state: "processing",
@@ -56,6 +60,10 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
           setExportState({ state: "fail", reason: `Failed processing video: ${err}` });
         }
       });
+
+      return () => {
+        cancelEffect?.();
+      };
     },
     // prevent re-running
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -72,6 +80,6 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
     case "done":
       return <ExportDone exportState={exportState} exportFileName={`${formatDateTime(eventTime)}.mp4`} onFinish={onFinish} />;
     case "fail":
-      return <ExportFail exportState={exportState} onDismiss={onFinish} />;
+      return <ExportFail exportState={exportState} onDismiss={onCancel} />;
   }
 }
