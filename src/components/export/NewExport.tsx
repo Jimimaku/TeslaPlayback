@@ -1,6 +1,6 @@
-import { Text } from "@primer/react";
+import { Box, Button, Text } from "@primer/react";
 import { juxt } from "ramda";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ExportConvertState } from ".";
 import { PlaybackEvent } from "../../common";
 import { EventHub } from "../../utils/EventHub";
@@ -9,7 +9,6 @@ import { flowControlErrors } from "../../utils/exportVideo/mediabunny";
 import { $ } from "../../utils/general";
 import { formatDateTime } from "../../utils/time";
 import { ExportDone } from "./ExportDone";
-import { ExportFail } from "./ExportFail";
 import { ExportProcessing } from "./ExportProcessing";
 
 type Props = {
@@ -25,6 +24,7 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
   const [exportState, setExportState] = useState<ExportConvertState>({
     state: "loadingConverter",
   });
+  const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(
     () => {
@@ -36,10 +36,18 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
 
           const progressHub = new EventHub<Progress>();
           const convert = await loadConverter();
-          const { cancel, result } = convert(convertTracks, convertConfig, {
-            onProgress: progressHub.dispatch,
-            onError: juxt([console.error, (error: unknown) => setExportState({ state: "fail", reason: `Failed processing video: ${error}` })]),
-          });
+          const canvas = ref.current ?? undefined;
+          const { cancel, result } = convert(
+            convertTracks,
+            {
+              ...convertConfig,
+              canvas,
+            },
+            {
+              onProgress: progressHub.dispatch,
+              onError: juxt([console.error, (error: unknown) => setExportState({ state: "fail", reason: `Failed processing video: ${error}` })]),
+            },
+          );
 
           cancelEffect = cancel;
 
@@ -72,14 +80,26 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
     ],
   );
 
-  switch (exportState.state) {
-    case "loadingConverter":
-      return <Text>Loading plugins for exporting video...</Text>;
-    case "processing":
-      return <ExportProcessing exportState={exportState} setExportState={setExportState} />;
-    case "done":
-      return <ExportDone exportState={exportState} exportFileName={`${formatDateTime(eventTime)}.mp4`} onFinish={onFinish} />;
-    case "fail":
-      return <ExportFail exportState={exportState} onDismiss={onCancel} />;
-  }
+  return (
+    <>
+      {$(() => {
+        switch (exportState.state) {
+          case "loadingConverter":
+            return <Text>Loading plugins for exporting video...</Text>;
+          case "processing":
+            return <ExportProcessing exportState={exportState} setExportState={setExportState} />;
+          case "done":
+            return <ExportDone exportState={exportState} exportFileName={`${formatDateTime(eventTime)}.mp4`} onFinish={onFinish} />;
+          case "fail":
+            return (
+              <Box>
+                <Text>{exportState.reason}</Text>
+                <Button onClick={onCancel}>OK</Button>
+              </Box>
+            );
+        }
+      })}
+      <canvas ref={ref} style={{ maxWidth: "100%" }} width={convertConfig.size.w} height={convertConfig.size.h} />
+    </>
+  );
 }

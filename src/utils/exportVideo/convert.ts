@@ -1,6 +1,7 @@
 export interface ConvertConfig {
   text?: [content: Date | string, style: DrawTextStyle];
   trim?: [start: Date, end: Date];
+  canvas?: HTMLCanvasElement;
   size: Size;
 }
 

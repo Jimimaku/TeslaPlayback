@@ -59,10 +59,9 @@ export const flowControlErrors = {
 
 export const convert: Convert = (tracksToConvert, config, callbacks) =>
   createCancelable(async (cancelSignal: CancelSignal) => {
-    const { text, trim, size } = config;
+    const { text, trim, size, canvas = getCanvas(size) } = config;
 
     // ) Inputs
-    // TODO: load inputs on-demand according to processing time; but we'll lose some meta data in the beginning
     const inputs = await Promise.all(tracksToConvert.map(({ sourceMeta }) => sourceMeta).map(loadVideoTrack));
     const durations = (await Promise.all(inputs.map((input) => input.videoTrack?.computeDuration()))).map((d) =>
       typeof d === "number" ? d * 1000 : d,
@@ -90,7 +89,10 @@ export const convert: Convert = (tracksToConvert, config, callbacks) =>
     const frameCount = Math.max(1, Math.floor((totalDurationMs * fps) / 1000));
 
     // ) Canvas & output
-    const { videoSource, output, ctx, target, canvas } = await setupCanvas(size, true); // Enable preview
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("No canvas 2D context");
+
+    const { videoSource, output, target } = await setupCanvas(canvas); // Enable preview
 
     const sinks = inputs.map(({ videoTrack }) => videoTrack).map((videoTrack) => videoTrack && new VideoSampleSink(videoTrack));
     try {
@@ -152,25 +154,14 @@ export const convert: Convert = (tracksToConvert, config, callbacks) =>
     }
   });
 
-async function setupCanvas({ w: width, h: height }: Size, preview?: boolean) {
+function getCanvas(size: Size) {
   const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("No canvas 2D context");
+  canvas.width = size.w;
+  canvas.height = size.h;
+  return canvas;
+}
 
-  // Add canvas to DOM for preview
-  if (preview) {
-    canvas.style.border = "1px solid #ccc";
-    canvas.style.maxWidth = "100%";
-    canvas.style.maxHeight = "400px";
-    canvas.style.position = "fixed";
-    canvas.style.bottom = "10px";
-    canvas.style.right = "10px";
-    canvas.style.zIndex = "10000";
-    document.body.appendChild(canvas);
-  }
-
+async function setupCanvas(canvas: HTMLCanvasElement) {
   // Choose an encodable codec (avc1 / av1 / vp9 depends on the environment)
   const codec = await getFirstEncodableVideoCodec(["avc", "av1", "vp9"]);
   if (codec === null) throw new Error("No encodable video codec found");
@@ -182,5 +173,5 @@ async function setupCanvas({ w: width, h: height }: Size, preview?: boolean) {
   });
   output.addVideoTrack(videoSource); // add before start()
   await output.start();
-  return { videoSource, output, ctx, target, canvas };
+  return { videoSource, output, target };
 }
