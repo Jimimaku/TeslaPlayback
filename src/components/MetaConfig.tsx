@@ -1,27 +1,25 @@
-import { isNotNil, map, values, zipObj } from "ramda";
+import { isNotNil, values, zipObj } from "ramda";
 import { PlaybackEvent } from "../common";
 import { ConvertConfig, ConvertTrack, Position, Quad, Size } from "../utils/exportVideo/convert";
 import { VideoLayoutKey, videoLayouts } from "../utils/VideoLayoutKey";
 
-export type MetaConfig = {
-  trim?: ConvertConfig["trim"];
-  size: ConvertConfig["size"];
+export type MetaConfig = Pick<ConvertConfig, "trim" | "size" | "videoSize"> & {
   layoutKey: VideoLayoutKey;
 };
 
-export const transformConfig = ({ trim, size }: MetaConfig): ConvertConfig => ({
+export const transformConfig = ({ trim, size, videoSize }: MetaConfig): ConvertConfig => ({
   trim,
   size,
+  videoSize,
 });
 
 export function transformTracks(metaConfig: MetaConfig, event: PlaybackEvent): ConvertTrack[] {
   const [, slices] = event;
-  const { size, layoutKey } = metaConfig;
+  const { videoSize, layoutKey } = metaConfig;
   const videoLayout = videoLayouts[layoutKey];
   const colsAmount = Math.ceil(Math.sqrt(videoLayout.length));
   const rowsAmount = Math.ceil(videoLayout.length / colsAmount);
-  const scale = Math.max(colsAmount, rowsAmount);
-  const quads = generateLayoutQuads(size, rowsAmount, colsAmount).map((quad) => map((v) => v / scale, quad));
+  const quads = generateLayoutQuads(videoSize, rowsAmount, colsAmount).map((quad) => ({ ...quad, y: quad.y + 120 }));
   const directionToQuadMap = zipObj(videoLayout, quads);
 
   const convertTracks: ConvertTrack[] = values(slices)

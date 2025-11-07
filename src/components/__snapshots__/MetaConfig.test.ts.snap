@@ -5,518 +5,425 @@ exports[`transformTracks HW4 1`] = `
   "RecentClips": {
     "2025-09-20_13-36-01": [
       {
-        "duration": [
-          2025-09-20T05:36:01.000Z,
-          2025-09-20T05:37:01.000Z,
-        ],
         "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 0,
-        },
-        "sourceMeta": {
-          "name": "2025-09-20_13-36-01-front.mp4",
-          "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-front.mp4",
-        },
-      },
-      {
-        "duration": [
-          2025-09-20T05:36:01.000Z,
-          2025-09-20T05:37:01.000Z,
-        ],
-        "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-36-01-left_repeater.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-left_repeater.mp4",
         },
+        "startTime": 2025-09-20T05:36:01.000Z,
       },
       {
-        "duration": [
-          2025-09-20T05:36:01.000Z,
-          2025-09-20T05:37:01.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
+        },
+        "sourceMeta": {
+          "name": "2025-09-20_13-36-01-front.mp4",
+          "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-front.mp4",
+        },
+        "startTime": 2025-09-20T05:36:01.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
           "w": 640,
           "x": 1280,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-36-01-right_repeater.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-right_repeater.mp4",
         },
+        "startTime": 2025-09-20T05:36:01.000Z,
       },
       {
-        "duration": [
-          2025-09-20T05:36:01.000Z,
-          2025-09-20T05:37:01.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 0,
-          "y": 360,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-36-01-left_pillar.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-left_pillar.mp4",
         },
+        "startTime": 2025-09-20T05:36:01.000Z,
       },
       {
-        "duration": [
-          2025-09-20T05:36:01.000Z,
-          2025-09-20T05:37:01.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 1280,
-          "y": 360,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-36-01-right_pillar.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-right_pillar.mp4",
         },
+        "startTime": 2025-09-20T05:36:01.000Z,
       },
     ],
     "2025-09-20_13-37-02": [
       {
-        "duration": [
-          2025-09-20T05:37:02.000Z,
-          2025-09-20T05:38:02.000Z,
-        ],
         "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 0,
-        },
-        "sourceMeta": {
-          "name": "2025-09-20_13-37-02-front.mp4",
-          "webkitRelativePath": "RecentClips/2025-09-20_13-37-02-front.mp4",
-        },
-      },
-      {
-        "duration": [
-          2025-09-20T05:37:02.000Z,
-          2025-09-20T05:38:02.000Z,
-        ],
-        "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 360,
-        },
-        "sourceMeta": {
-          "name": "2025-09-20_13-37-02-back.mp4",
-          "webkitRelativePath": "RecentClips/2025-09-20_13-37-02-back.mp4",
-        },
-      },
-      {
-        "duration": [
-          2025-09-20T05:37:02.000Z,
-          2025-09-20T05:38:02.000Z,
-        ],
-        "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-37-02-left_repeater.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-37-02-left_repeater.mp4",
         },
+        "startTime": 2025-09-20T05:37:02.000Z,
       },
       {
-        "duration": [
-          2025-09-20T05:37:02.000Z,
-          2025-09-20T05:38:02.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
+        },
+        "sourceMeta": {
+          "name": "2025-09-20_13-37-02-front.mp4",
+          "webkitRelativePath": "RecentClips/2025-09-20_13-37-02-front.mp4",
+        },
+        "startTime": 2025-09-20T05:37:02.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
           "w": 640,
           "x": 1280,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-37-02-right_repeater.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-37-02-right_repeater.mp4",
         },
+        "startTime": 2025-09-20T05:37:02.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
+        },
+        "sourceMeta": {
+          "name": "2025-09-20_13-37-02-back.mp4",
+          "webkitRelativePath": "RecentClips/2025-09-20_13-37-02-back.mp4",
+        },
+        "startTime": 2025-09-20T05:37:02.000Z,
       },
     ],
     "2025-09-20_13-38-02": [
       {
-        "duration": [
-          2025-09-20T05:38:02.000Z,
-          2025-09-20T05:39:02.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 640,
-          "y": 360,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-38-02-back.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-38-02-back.mp4",
         },
+        "startTime": 2025-09-20T05:38:02.000Z,
       },
     ],
   },
   "SavedClips": {
     "2021-10-20_20-47-06": [
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 0,
-        },
-        "sourceMeta": {
-          "name": "2021-10-20_20-36-02-front.mp4",
-          "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-36-02-front.mp4",
-        },
-      },
-      {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
-        "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 360,
-        },
-        "sourceMeta": {
-          "name": "2021-10-20_20-36-02-back.mp4",
-          "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-36-02-back.mp4",
-        },
-      },
-      {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
-        "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-36-02-left_repeater.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-36-02-left_repeater.mp4",
         },
+        "startTime": 2021-10-20T12:36:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
+        },
+        "sourceMeta": {
+          "name": "2021-10-20_20-36-02-front.mp4",
+          "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-36-02-front.mp4",
+        },
+        "startTime": 2021-10-20T12:36:02.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
           "w": 640,
           "x": 1280,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-36-02-right_repeater.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-36-02-right_repeater.mp4",
         },
+        "startTime": 2021-10-20T12:36:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 640,
-          "y": 0,
+          "y": 600,
         },
         "sourceMeta": {
-          "name": "2021-10-20_20-37-02-front.mp4",
-          "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-37-02-front.mp4",
+          "name": "2021-10-20_20-36-02-back.mp4",
+          "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-36-02-back.mp4",
         },
+        "startTime": 2021-10-20T12:36:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 360,
-        },
-        "sourceMeta": {
-          "name": "2021-10-20_20-37-02-back.mp4",
-          "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-37-02-back.mp4",
-        },
-      },
-      {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
-        "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-37-02-left_repeater.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-37-02-left_repeater.mp4",
         },
+        "startTime": 2021-10-20T12:37:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
+        },
+        "sourceMeta": {
+          "name": "2021-10-20_20-37-02-front.mp4",
+          "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-37-02-front.mp4",
+        },
+        "startTime": 2021-10-20T12:37:02.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
           "w": 640,
           "x": 1280,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-37-02-right_repeater.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-37-02-right_repeater.mp4",
         },
+        "startTime": 2021-10-20T12:37:02.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
+        },
+        "sourceMeta": {
+          "name": "2021-10-20_20-37-02-back.mp4",
+          "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-37-02-back.mp4",
+        },
+        "startTime": 2021-10-20T12:37:02.000Z,
       },
     ],
     "2025-05-09_20-12-41": [
       {
-        "duration": [
-          2025-05-09T12:12:41.000Z,
-          2025-05-09T12:13:41.000Z,
-        ],
         "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 0,
-        },
-        "sourceMeta": {
-          "name": "2025-05-09_20-01-39-front.mp4",
-          "webkitRelativePath": "SavedClips/2025-05-09_20-12-41/2025-05-09_20-01-39-front.mp4",
-        },
-      },
-      {
-        "duration": [
-          2025-05-09T12:12:41.000Z,
-          2025-05-09T12:13:41.000Z,
-        ],
-        "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 360,
-        },
-        "sourceMeta": {
-          "name": "2025-05-09_20-01-39-back.mp4",
-          "webkitRelativePath": "SavedClips/2025-05-09_20-12-41/2025-05-09_20-01-39-back.mp4",
-        },
-      },
-      {
-        "duration": [
-          2025-05-09T12:12:41.000Z,
-          2025-05-09T12:13:41.000Z,
-        ],
-        "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-05-09_20-01-39-left_repeater.mp4",
           "webkitRelativePath": "SavedClips/2025-05-09_20-12-41/2025-05-09_20-01-39-left_repeater.mp4",
         },
+        "startTime": 2025-05-09T12:01:39.000Z,
       },
       {
-        "duration": [
-          2025-05-09T12:12:41.000Z,
-          2025-05-09T12:13:41.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
+        },
+        "sourceMeta": {
+          "name": "2025-05-09_20-01-39-front.mp4",
+          "webkitRelativePath": "SavedClips/2025-05-09_20-12-41/2025-05-09_20-01-39-front.mp4",
+        },
+        "startTime": 2025-05-09T12:01:39.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
           "w": 640,
           "x": 1280,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-05-09_20-01-39-right_repeater.mp4",
           "webkitRelativePath": "SavedClips/2025-05-09_20-12-41/2025-05-09_20-01-39-right_repeater.mp4",
         },
+        "startTime": 2025-05-09T12:01:39.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
+        },
+        "sourceMeta": {
+          "name": "2025-05-09_20-01-39-back.mp4",
+          "webkitRelativePath": "SavedClips/2025-05-09_20-12-41/2025-05-09_20-01-39-back.mp4",
+        },
+        "startTime": 2025-05-09T12:01:39.000Z,
       },
     ],
     "2025-09-20_14-33-59": [
       {
-        "duration": [
-          2025-09-20T06:33:59.000Z,
-          2025-09-20T06:34:59.000Z,
-        ],
         "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 0,
-        },
-        "sourceMeta": {
-          "name": "2025-09-20_14-22-42-front.mp4",
-          "webkitRelativePath": "SavedClips/2025-09-20_14-33-59/2025-09-20_14-22-42-front.mp4",
-        },
-      },
-      {
-        "duration": [
-          2025-09-20T06:33:59.000Z,
-          2025-09-20T06:34:59.000Z,
-        ],
-        "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_14-22-42-left_repeater.mp4",
           "webkitRelativePath": "SavedClips/2025-09-20_14-33-59/2025-09-20_14-22-42-left_repeater.mp4",
         },
+        "startTime": 2025-09-20T06:22:42.000Z,
       },
       {
-        "duration": [
-          2025-09-20T06:33:59.000Z,
-          2025-09-20T06:34:59.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
+        },
+        "sourceMeta": {
+          "name": "2025-09-20_14-22-42-front.mp4",
+          "webkitRelativePath": "SavedClips/2025-09-20_14-33-59/2025-09-20_14-22-42-front.mp4",
+        },
+        "startTime": 2025-09-20T06:22:42.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
           "w": 640,
           "x": 1280,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_14-22-42-right_repeater.mp4",
           "webkitRelativePath": "SavedClips/2025-09-20_14-33-59/2025-09-20_14-22-42-right_repeater.mp4",
         },
+        "startTime": 2025-09-20T06:22:42.000Z,
       },
       {
-        "duration": [
-          2025-09-20T06:33:59.000Z,
-          2025-09-20T06:34:59.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 640,
-          "y": 360,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-09-20_14-23-43-back.mp4",
           "webkitRelativePath": "SavedClips/2025-09-20_14-33-59/2025-09-20_14-23-43-back.mp4",
         },
+        "startTime": 2025-09-20T06:23:43.000Z,
       },
     ],
   },
   "SentryClips": {
     "2025-06-20_03-48-20": [
       {
-        "duration": [
-          2025-06-19T19:48:20.000Z,
-          2025-06-19T19:49:20.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 640,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-06-20_03-47-19-front.mp4",
           "webkitRelativePath": "SentryClips/2025-06-20_03-48-20/2025-06-20_03-47-19-front.mp4",
         },
+        "startTime": 2025-06-19T19:47:19.000Z,
       },
     ],
     "2025-06-20_07-40-59": [
       {
-        "duration": [
-          2025-06-19T23:40:59.000Z,
-          2025-06-19T23:41:59.000Z,
-        ],
         "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 0,
-        },
-        "sourceMeta": {
-          "name": "2025-06-20_07-30-31-front.mp4",
-          "webkitRelativePath": "SentryClips/2025-06-20_07-40-59/2025-06-20_07-30-31-front.mp4",
-        },
-      },
-      {
-        "duration": [
-          2025-06-19T23:40:59.000Z,
-          2025-06-19T23:41:59.000Z,
-        ],
-        "quad": {
-          "h": 360,
-          "w": 640,
-          "x": 640,
-          "y": 360,
-        },
-        "sourceMeta": {
-          "name": "2025-06-20_07-30-31-back.mp4",
-          "webkitRelativePath": "SentryClips/2025-06-20_07-40-59/2025-06-20_07-30-31-back.mp4",
-        },
-      },
-      {
-        "duration": [
-          2025-06-19T23:40:59.000Z,
-          2025-06-19T23:41:59.000Z,
-        ],
-        "quad": {
-          "h": 360,
+          "h": 480,
           "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-06-20_07-30-31-left_repeater.mp4",
           "webkitRelativePath": "SentryClips/2025-06-20_07-40-59/2025-06-20_07-30-31-left_repeater.mp4",
         },
+        "startTime": 2025-06-19T23:30:31.000Z,
       },
       {
-        "duration": [
-          2025-06-19T23:40:59.000Z,
-          2025-06-19T23:41:59.000Z,
-        ],
         "quad": {
-          "h": 360,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
+        },
+        "sourceMeta": {
+          "name": "2025-06-20_07-30-31-front.mp4",
+          "webkitRelativePath": "SentryClips/2025-06-20_07-40-59/2025-06-20_07-30-31-front.mp4",
+        },
+        "startTime": 2025-06-19T23:30:31.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
           "w": 640,
           "x": 1280,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-06-20_07-30-31-right_repeater.mp4",
           "webkitRelativePath": "SentryClips/2025-06-20_07-40-59/2025-06-20_07-30-31-right_repeater.mp4",
         },
+        "startTime": 2025-06-19T23:30:31.000Z,
+      },
+      {
+        "quad": {
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
+        },
+        "sourceMeta": {
+          "name": "2025-06-20_07-30-31-back.mp4",
+          "webkitRelativePath": "SentryClips/2025-06-20_07-40-59/2025-06-20_07-30-31-back.mp4",
+        },
+        "startTime": 2025-06-19T23:30:31.000Z,
       },
     ],
   },
@@ -529,508 +436,399 @@ exports[`transformTracks classic 1`] = `
   "RecentClips": {
     "2025-09-20_13-36-01": [
       {
-        "duration": [
-          2025-09-20T05:36:01.000Z,
-          2025-09-20T05:37:01.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-36-01-front.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-front.mp4",
         },
+        "startTime": 2025-09-20T05:36:01.000Z,
       },
       {
-        "duration": [
-          2025-09-20T05:36:01.000Z,
-          2025-09-20T05:37:01.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 540,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-36-01-left_repeater.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-left_repeater.mp4",
         },
+        "startTime": 2025-09-20T05:36:01.000Z,
       },
       {
-        "duration": [
-          2025-09-20T05:36:01.000Z,
-          2025-09-20T05:37:01.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 540,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-36-01-right_repeater.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-right_repeater.mp4",
         },
-      },
-      {
-        "duration": [
-          2025-09-20T05:36:01.000Z,
-          2025-09-20T05:37:01.000Z,
-        ],
-        "quad": undefined,
-        "sourceMeta": {
-          "name": "2025-09-20_13-36-01-left_pillar.mp4",
-          "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-left_pillar.mp4",
-        },
-      },
-      {
-        "duration": [
-          2025-09-20T05:36:01.000Z,
-          2025-09-20T05:37:01.000Z,
-        ],
-        "quad": undefined,
-        "sourceMeta": {
-          "name": "2025-09-20_13-36-01-right_pillar.mp4",
-          "webkitRelativePath": "RecentClips/2025-09-20_13-36-01-right_pillar.mp4",
-        },
+        "startTime": 2025-09-20T05:36:01.000Z,
       },
     ],
     "2025-09-20_13-37-02": [
       {
-        "duration": [
-          2025-09-20T05:37:02.000Z,
-          2025-09-20T05:38:02.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-37-02-front.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-37-02-front.mp4",
         },
+        "startTime": 2025-09-20T05:37:02.000Z,
       },
       {
-        "duration": [
-          2025-09-20T05:37:02.000Z,
-          2025-09-20T05:38:02.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 0,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-37-02-back.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-37-02-back.mp4",
         },
+        "startTime": 2025-09-20T05:37:02.000Z,
       },
       {
-        "duration": [
-          2025-09-20T05:37:02.000Z,
-          2025-09-20T05:38:02.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 540,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-37-02-left_repeater.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-37-02-left_repeater.mp4",
         },
+        "startTime": 2025-09-20T05:37:02.000Z,
       },
       {
-        "duration": [
-          2025-09-20T05:37:02.000Z,
-          2025-09-20T05:38:02.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 540,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-37-02-right_repeater.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-37-02-right_repeater.mp4",
         },
+        "startTime": 2025-09-20T05:37:02.000Z,
       },
     ],
     "2025-09-20_13-38-02": [
       {
-        "duration": [
-          2025-09-20T05:38:02.000Z,
-          2025-09-20T05:39:02.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 0,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_13-38-02-back.mp4",
           "webkitRelativePath": "RecentClips/2025-09-20_13-38-02-back.mp4",
         },
+        "startTime": 2025-09-20T05:38:02.000Z,
       },
     ],
   },
   "SavedClips": {
     "2021-10-20_20-47-06": [
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-36-02-front.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-36-02-front.mp4",
         },
+        "startTime": 2021-10-20T12:36:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 0,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-36-02-back.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-36-02-back.mp4",
         },
+        "startTime": 2021-10-20T12:36:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 540,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-36-02-left_repeater.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-36-02-left_repeater.mp4",
         },
+        "startTime": 2021-10-20T12:36:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 540,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-36-02-right_repeater.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-36-02-right_repeater.mp4",
         },
+        "startTime": 2021-10-20T12:36:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-37-02-front.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-37-02-front.mp4",
         },
+        "startTime": 2021-10-20T12:37:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 0,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-37-02-back.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-37-02-back.mp4",
         },
+        "startTime": 2021-10-20T12:37:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 540,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-37-02-left_repeater.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-37-02-left_repeater.mp4",
         },
+        "startTime": 2021-10-20T12:37:02.000Z,
       },
       {
-        "duration": [
-          2021-10-20T12:47:06.000Z,
-          2021-10-20T12:48:06.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 540,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2021-10-20_20-37-02-right_repeater.mp4",
           "webkitRelativePath": "SavedClips/2021-10-20_20-47-06/2021-10-20_20-37-02-right_repeater.mp4",
         },
+        "startTime": 2021-10-20T12:37:02.000Z,
       },
     ],
     "2025-05-09_20-12-41": [
       {
-        "duration": [
-          2025-05-09T12:12:41.000Z,
-          2025-05-09T12:13:41.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-05-09_20-01-39-front.mp4",
           "webkitRelativePath": "SavedClips/2025-05-09_20-12-41/2025-05-09_20-01-39-front.mp4",
         },
+        "startTime": 2025-05-09T12:01:39.000Z,
       },
       {
-        "duration": [
-          2025-05-09T12:12:41.000Z,
-          2025-05-09T12:13:41.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 0,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-05-09_20-01-39-back.mp4",
           "webkitRelativePath": "SavedClips/2025-05-09_20-12-41/2025-05-09_20-01-39-back.mp4",
         },
+        "startTime": 2025-05-09T12:01:39.000Z,
       },
       {
-        "duration": [
-          2025-05-09T12:12:41.000Z,
-          2025-05-09T12:13:41.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 540,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-05-09_20-01-39-left_repeater.mp4",
           "webkitRelativePath": "SavedClips/2025-05-09_20-12-41/2025-05-09_20-01-39-left_repeater.mp4",
         },
+        "startTime": 2025-05-09T12:01:39.000Z,
       },
       {
-        "duration": [
-          2025-05-09T12:12:41.000Z,
-          2025-05-09T12:13:41.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 540,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-05-09_20-01-39-right_repeater.mp4",
           "webkitRelativePath": "SavedClips/2025-05-09_20-12-41/2025-05-09_20-01-39-right_repeater.mp4",
         },
+        "startTime": 2025-05-09T12:01:39.000Z,
       },
     ],
     "2025-09-20_14-33-59": [
       {
-        "duration": [
-          2025-09-20T06:33:59.000Z,
-          2025-09-20T06:34:59.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_14-22-42-front.mp4",
           "webkitRelativePath": "SavedClips/2025-09-20_14-33-59/2025-09-20_14-22-42-front.mp4",
         },
+        "startTime": 2025-09-20T06:22:42.000Z,
       },
       {
-        "duration": [
-          2025-09-20T06:33:59.000Z,
-          2025-09-20T06:34:59.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 540,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-09-20_14-22-42-left_repeater.mp4",
           "webkitRelativePath": "SavedClips/2025-09-20_14-33-59/2025-09-20_14-22-42-left_repeater.mp4",
         },
+        "startTime": 2025-09-20T06:22:42.000Z,
       },
       {
-        "duration": [
-          2025-09-20T06:33:59.000Z,
-          2025-09-20T06:34:59.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 540,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-09-20_14-22-42-right_repeater.mp4",
           "webkitRelativePath": "SavedClips/2025-09-20_14-33-59/2025-09-20_14-22-42-right_repeater.mp4",
         },
+        "startTime": 2025-09-20T06:22:42.000Z,
       },
       {
-        "duration": [
-          2025-09-20T06:33:59.000Z,
-          2025-09-20T06:34:59.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 0,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-09-20_14-23-43-back.mp4",
           "webkitRelativePath": "SavedClips/2025-09-20_14-33-59/2025-09-20_14-23-43-back.mp4",
         },
+        "startTime": 2025-09-20T06:23:43.000Z,
       },
     ],
   },
   "SentryClips": {
     "2025-06-20_03-48-20": [
       {
-        "duration": [
-          2025-06-19T19:48:20.000Z,
-          2025-06-19T19:49:20.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-06-20_03-47-19-front.mp4",
           "webkitRelativePath": "SentryClips/2025-06-20_03-48-20/2025-06-20_03-47-19-front.mp4",
         },
+        "startTime": 2025-06-19T19:47:19.000Z,
       },
     ],
     "2025-06-20_07-40-59": [
       {
-        "duration": [
-          2025-06-19T23:40:59.000Z,
-          2025-06-19T23:41:59.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 0,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-06-20_07-30-31-front.mp4",
           "webkitRelativePath": "SentryClips/2025-06-20_07-40-59/2025-06-20_07-30-31-front.mp4",
         },
+        "startTime": 2025-06-19T23:30:31.000Z,
       },
       {
-        "duration": [
-          2025-06-19T23:40:59.000Z,
-          2025-06-19T23:41:59.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 0,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 120,
         },
         "sourceMeta": {
           "name": "2025-06-20_07-30-31-back.mp4",
           "webkitRelativePath": "SentryClips/2025-06-20_07-40-59/2025-06-20_07-30-31-back.mp4",
         },
+        "startTime": 2025-06-19T23:30:31.000Z,
       },
       {
-        "duration": [
-          2025-06-19T23:40:59.000Z,
-          2025-06-19T23:41:59.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
+          "h": 480,
+          "w": 640,
           "x": 0,
-          "y": 540,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-06-20_07-30-31-left_repeater.mp4",
           "webkitRelativePath": "SentryClips/2025-06-20_07-40-59/2025-06-20_07-30-31-left_repeater.mp4",
         },
+        "startTime": 2025-06-19T23:30:31.000Z,
       },
       {
-        "duration": [
-          2025-06-19T23:40:59.000Z,
-          2025-06-19T23:41:59.000Z,
-        ],
         "quad": {
-          "h": 540,
-          "w": 960,
-          "x": 960,
-          "y": 540,
+          "h": 480,
+          "w": 640,
+          "x": 640,
+          "y": 600,
         },
         "sourceMeta": {
           "name": "2025-06-20_07-30-31-right_repeater.mp4",
           "webkitRelativePath": "SentryClips/2025-06-20_07-40-59/2025-06-20_07-30-31-right_repeater.mp4",
         },
+        "startTime": 2025-06-19T23:30:31.000Z,
       },
     ],
   },

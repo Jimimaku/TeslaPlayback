@@ -133,10 +133,7 @@ export const convert: Convert = (tracksToConvert, config, callbacks) =>
             s.close(); // release resources ASAP
           });
 
-          if (text) {
-            const [content, textStyle] = text;
-            drawTextOverlay(ctx, content instanceof Date ? formatDateTime(timeInReality) : content, textStyle);
-          }
+          drawText(ctx, timeInReality);
         }
 
         await videoSource.add(timeInVideoMs / 1000, frameDurMs / 1000); // encode the current canvas frame
@@ -151,6 +148,13 @@ export const convert: Convert = (tracksToConvert, config, callbacks) =>
       videoSource.close();
       output.cancel();
       canvas.remove();
+    }
+
+    function drawText(ctx: CanvasRenderingContext2D, timeInReality: Date) {
+      if (text) {
+        const [content, textStyle] = text;
+        drawTextOverlay(ctx, content instanceof Date ? formatDateTime(timeInReality) : content, textStyle);
+      }
     }
   });
 

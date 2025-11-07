@@ -44,6 +44,7 @@ export const ExportConfig: React.FC<{
     case ExportState.Converting: {
       return (
         <Dialog
+          title={"Exporting"}
           defaultOpen
           onChangeIsOpen={(isOpen) => {
             if (!isOpen) {

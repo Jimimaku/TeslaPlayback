@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ExportConvertState } from ".";
 import { PlaybackEvent } from "../../common";
 import { EventHub } from "../../utils/EventHub";
-import { ConvertConfig, ConvertTrack, loadConverter, Progress } from "../../utils/exportVideo/convert";
+import { ConvertConfig, ConvertTrack, headerSize, loadConverter, Progress } from "../../utils/exportVideo/convert";
 import { flowControlErrors } from "../../utils/exportVideo/mediabunny";
 import { $ } from "../../utils/general";
 import { formatDateTime } from "../../utils/time";
@@ -28,6 +28,7 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
 
   useEffect(
     () => {
+      let cancelled = false;
       let cancelEffect: (() => void) | null = null;
 
       $(async () => {
@@ -36,12 +37,26 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
 
           const progressHub = new EventHub<Progress>();
           const convert = await loadConverter();
+          if (cancelled) return;
+
           const canvas = ref.current ?? undefined;
           const { cancel, result } = convert(
             convertTracks,
             {
               ...convertConfig,
               canvas,
+              text: [
+                eventTime,
+                {
+                  quad: {
+                    x: 0,
+                    y: 0,
+                    w: convertConfig.size.w,
+                    h: headerSize.h,
+                  },
+                  fontSize: headerSize.h / 2,
+                },
+              ],
             },
             {
               onProgress: progressHub.dispatch,
@@ -70,6 +85,7 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
       });
 
       return () => {
+        cancelled = true;
         cancelEffect?.();
       };
     },
@@ -82,6 +98,7 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
 
   return (
     <>
+      <canvas ref={ref} style={{ width: "100%" }} width={convertConfig.size.w} height={convertConfig.size.h} />
       {$(() => {
         switch (exportState.state) {
           case "loadingConverter":
@@ -99,7 +116,6 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
             );
         }
       })}
-      <canvas ref={ref} style={{ maxWidth: "100%" }} width={convertConfig.size.w} height={convertConfig.size.h} />
     </>
   );
 }

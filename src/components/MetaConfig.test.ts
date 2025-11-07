@@ -17,6 +17,10 @@ test("transformTracks classic", () => {
               {
                 layoutKey: VideoLayoutKey.CLASSIC,
                 size,
+                videoSize: {
+                  w: 640,
+                  h: 480,
+                },
               },
               event,
             ),
@@ -37,6 +41,10 @@ test("transformTracks HW4", () => {
               {
                 layoutKey: VideoLayoutKey.HW4,
                 size,
+                videoSize: {
+                  w: 640,
+                  h: 480,
+                },
               },
               event,
             ),

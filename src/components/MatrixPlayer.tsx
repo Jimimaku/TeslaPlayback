@@ -167,8 +167,8 @@ export const MatrixPlayer = forwardRef<PlayControl, Props>(({ event, videoLayout
         borderColor="border.default"
         borderRadius={4}
       >
-        <Box p={0} bg="#000" lineHeight="1" display="flex" justifyContent="center" alignItems="center">
-          <Text color="#fff" fontFamily="mono" fontSize="18px">
+        <Box p={0} py={2} bg="#000" lineHeight="1" display="flex" justifyContent="center" alignItems="center">
+          <Text color="#fff" fontFamily="mono" fontSize="24px">
             {formatDateTime(shiftTime(sliceTime, slicePlaytime))}
           </Text>
         </Box>

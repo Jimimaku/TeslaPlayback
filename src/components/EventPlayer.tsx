@@ -1,6 +1,8 @@
 import { all, isNotNil } from "ramda";
 import { ComponentProps, FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getEventTime, PlaybackEvent } from "../common";
+import { VideoLayoutKey } from "../utils/VideoLayoutKey";
+import { headerSize, videoSize } from "../utils/exportVideo/convert";
 import { ExportConfig } from "./ExportConfig";
 import { MatrixPlayer, PlayControl } from "./MatrixPlayer";
 import { MetaConfig } from "./MetaConfig";
@@ -18,9 +20,16 @@ export const EventPlayer: FC<{
     () => ({
       trim: all(isNotNil)(trim) ? (trim as [Date, Date]) : undefined,
       size: {
-        w: 1280,
-        h: 960,
-      },
+        [VideoLayoutKey.CLASSIC]: {
+          w: videoSize.w * 2,
+          h: videoSize.h * 2 + headerSize.h,
+        },
+        [VideoLayoutKey.HW4]: {
+          w: videoSize.w * 3,
+          h: videoSize.h * 2 + headerSize.h,
+        },
+      }[videoLayoutKey],
+      videoSize,
       layoutKey: videoLayoutKey,
     }),
     [trim, videoLayoutKey],

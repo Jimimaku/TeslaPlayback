@@ -1,8 +1,20 @@
+export type TextOverlay = {
+  quad: Quad;
+
+  fontSize?: number; // px (default 36)
+  fontFamily?: string; // default 'system-ui, sans-serif'
+  fontColor?: string; // CSS color; default '#fff'
+
+  backgroundColor?: string; // CSS color; default 'rgba(0,0,0,0.6)'
+  align?: CanvasTextAlign; // 'left'|'center'|'right'... default 'left'
+};
+
 export interface ConvertConfig {
-  text?: [content: Date | string, style: DrawTextStyle];
+  text?: [content: Date | string, style: TextOverlay];
   trim?: [start: Date, end: Date];
   canvas?: HTMLCanvasElement;
   size: Size;
+  videoSize: Size;
 }
 
 interface CancelableJob<T> {
@@ -43,13 +55,5 @@ export async function loadConverter(): Promise<Convert> {
   return (await import("./mediabunny")).convert;
 }
 
-export interface DrawTextStyle {
-  fontSize?: number;
-  fontColor?: string;
-  background?: boolean;
-  backgroundColor?: string;
-  x?: number;
-  y?: number;
-  baseTime?: string;
-  timeFormat?: string;
-}
+export const headerSize: Size = { w: 0, h: 120 };
+export const videoSize: Size = { w: 640, h: 480 };
