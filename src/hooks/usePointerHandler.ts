@@ -11,8 +11,15 @@ export type PointerHandlerOptions = Partial<{
 }>;
 
 export function usePointerHandler(
-  _onPointerMove: (e: PointerEvent, delta: Position2D) => void,
-  _onPointerUp: (e: PointerEvent) => void,
+  {
+    onPointerDown: _onPointerDown,
+    onPointerMove: _onPointerMove,
+    onPointerUp: _onPointerUp,
+  }: {
+    onPointerDown?: (e: PointerEvent) => void;
+    onPointerMove?: (e: PointerEvent, delta: Position2D) => void;
+    onPointerUp?: (e: PointerEvent) => void;
+  },
   { onDragStateChange }: PositionHandlerOptions = {},
 ) {
   const [dragState, setDragState] = useState<DragState>("idle");
@@ -25,7 +32,7 @@ export function usePointerHandler(
 
       const [x0, y0] = initialPositionRef.current;
       const delta: Position2D = [x1 - x0, y1 - y0];
-      _onPointerMove(e, delta);
+      _onPointerMove?.(e, delta);
     },
     [_onPointerMove],
   );
@@ -34,7 +41,7 @@ export function usePointerHandler(
       if (!initialPositionRef.current) return;
       initialPositionRef.current = null;
 
-      _onPointerUp(e);
+      _onPointerUp?.(e);
 
       onDragStateChange?.("idle");
       setDragState("idle");
@@ -52,8 +59,9 @@ export function usePointerHandler(
       initialPositionRef.current = [clientX, clientY];
       onDragStateChange?.("dragging");
       setDragState("dragging");
+      _onPointerDown?.(e.nativeEvent);
     },
-    [onDragStateChange],
+    [onDragStateChange, _onPointerDown],
   );
 
   return {

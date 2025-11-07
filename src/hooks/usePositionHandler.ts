@@ -8,7 +8,7 @@ export type PositionHandlerOptions = PointerHandlerOptions &
   }>;
 
 export function usePositionHandler(
-  onChange: (position: Position2D, e: PointerEvent) => void,
+  onChange: (delta: Position2D, e: PointerEvent) => void,
   { onDragStateChange, onClick, distanceTolerance = 2 }: PositionHandlerOptions = {},
 ) {
   const pointerMoved = useRef(false);
@@ -31,7 +31,10 @@ export function usePositionHandler(
     [onClick],
   );
 
-  return usePointerHandler(_onPointerMove, _onPointerUp, {
-    onDragStateChange,
-  });
+  return usePointerHandler(
+    { onPointerMove: _onPointerMove, onPointerUp: _onPointerUp },
+    {
+      onDragStateChange,
+    },
+  );
 }

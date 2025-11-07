@@ -1,9 +1,10 @@
 import { Box, BoxProps, SxProp, Tooltip } from "@primer/react";
 import { clamp, juxt } from "ramda";
 import { FC, InputHTMLAttributes, PropsWithChildren, useCallback, useMemo, useRef } from "react";
-import { DragState, usePointerHandler } from "../hooks/usePointerHandler";
+import { DragState, Position2D, usePointerHandler } from "../hooks/usePointerHandler";
 import { usePositionHandler } from "../hooks/usePositionHandler";
 import { ControlledPromise, createControlledPromise } from "./ControlledPromise";
+import { useSizeEntry } from "./useSizeEntry";
 
 export type ProgressBarProps = {
   getCaretLabel: (value: number) => string;
@@ -88,16 +89,24 @@ const ProgressBarPositioner = ({ value, children, boxProps }: CaretProps) => (
 export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChange, onEndChange, onDrag, sx }: ProgressBarProps) {
   const [total, start, end] = range ?? [];
 
+  const startValueRef = useRef<number>(start ?? 0);
   const onStartCaretDragStateChange = useMemo(() => createOnDragStart(onDrag), [onDrag]);
   const { onPointerDown: onStartCaretPointerDown } = usePositionHandler(
-    (_, e) => {
+    (delta) => {
       if (end == null) return;
-      const d = clamp(0, 1, getRelativePointerPosition(e));
+      const d = clamp(0, 1, resolveDelta(startValueRef.current, delta));
       onStartChange?.(d, [d, end]);
       onChange?.(d);
     },
     {
-      onDragStateChange: onStartCaretDragStateChange,
+      onDragStateChange: juxt([
+        onStartCaretDragStateChange,
+        (state) => {
+          if (state === "dragging") {
+            startValueRef.current = start ?? 0;
+          }
+        },
+      ]),
     },
   );
   const startCaret = start != null && total != null && (
@@ -120,16 +129,24 @@ export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChan
     </ProgressBarPositioner>
   );
 
+  const endValueRef = useRef<number>(end ?? 1);
   const onEndCaretDragStateChange = useMemo(() => createOnDragStart(onDrag), [onDrag]);
   const { onPointerDown: onEndCaretPointerDown } = usePositionHandler(
-    (_, e) => {
+    (delta) => {
       if (start == null) return;
-      const d = clamp(0, 1, getRelativePointerPosition(e));
+      const d = clamp(0, 1, resolveDelta(endValueRef.current, delta));
       onEndChange?.(d, [start, d]);
       onChange?.(d);
     },
     {
-      onDragStateChange: onEndCaretDragStateChange,
+      onDragStateChange: juxt([
+        onEndCaretDragStateChange,
+        (state) => {
+          if (state === "dragging") {
+            endValueRef.current = end ?? 1;
+          }
+        },
+      ]),
     },
   );
   const endCaret = end != null && total != null && (
@@ -153,29 +170,30 @@ export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChan
   );
 
   const progressControlBarRef = useRef<HTMLElement | null>(null);
-  const getRelativePointerPosition = useCallback((e: PointerEvent) => {
-    const current = progressControlBarRef.current;
-    if (!current) {
-      throw new Error("No progress control bar element");
-    }
-    const rect = current.getBoundingClientRect();
-    return (e.clientX - rect.left) / rect.width;
-  }, []);
+  const contentRect = useSizeEntry(progressControlBarRef)?.contentRect;
+  const width = contentRect?.width;
+  const resolveDelta = useCallback((initialValue: number, [delta]: Position2D) => clamp(0, 1)(width ? initialValue + delta / width : 0), [width]);
 
-  const { onPointerDown: onProgressPointerDown } = usePointerHandler(
-    (e) => {
+  const progressBarControlRef = useRef<ControlledPromise<void> | null>(null);
+  const initialValueRef = useRef<number>(value);
+  const { onPointerDown: onProgressPointerDown } = usePointerHandler({
+    onPointerDown() {
+      initialValueRef.current = value;
+      progressBarControlRef.current = createControlledPromise<void>();
+      onDrag?.(progressBarControlRef.current.promise);
+    },
+    onPointerMove: (e, delta) => {
       if (!progressBarControlRef.current) return;
 
       const pointerDown = e.buttons === 1;
       if (!pointerDown) return;
-
-      onChange?.(Math.max(0, Math.min(1, getRelativePointerPosition(e))));
+      onChange?.(resolveDelta(initialValueRef.current, delta));
     },
-    (/* e: React.PointerEvent */) => {
+    onPointerUp: (/* e: React.PointerEvent */) => {
       progressBarControlRef.current?.resolve();
       progressBarControlRef.current = null;
     },
-  );
+  });
 
   const activeArea = start != null && end != null && total != null && (
     <Box
@@ -192,27 +210,24 @@ export function ProgressBar({ getCaretLabel, value, onChange, range, onStartChan
     />
   );
 
-  const onBarPointerDown = useMemo(
-    () =>
-      juxt([
-        (e: React.PointerEvent) => {
-          progressBarControlRef.current = createControlledPromise<void>();
-          onDrag?.(progressBarControlRef.current.promise);
-
-          onChange?.(Math.max(0, Math.min(1, getRelativePointerPosition(e.nativeEvent))));
-        },
-        onProgressPointerDown,
-      ]),
-    [onChange, onDrag, onProgressPointerDown, getRelativePointerPosition],
+  const setValueOnBarPointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      const left = progressControlBarRef.current?.getBoundingClientRect().left;
+      if (!width || left == null) return;
+      const newValue = (e.clientX - left) / width;
+      initialValueRef.current = newValue;
+      return onChange?.(newValue);
+    },
+    [width, onChange],
   );
+  const onBarPointerDown = useMemo(() => juxt([onProgressPointerDown, setValueOnBarPointerDown]), [setValueOnBarPointerDown, onProgressPointerDown]);
 
-  const progressBarControlRef = useRef<ControlledPromise<void> | null>(null);
   const progressCaret = (
     <ProgressBarPositioner
       value={value}
       sx={{ bg: "black" }}
       boxProps={{
-        onPointerDown: onBarPointerDown,
+        onPointerDown: onProgressPointerDown,
       }}
     >
       <BarCaret tooltip={getCaretLabel(value)} sx={{ height: size + 2 * yPadding + "px", filter: "invert(1)" }} />
