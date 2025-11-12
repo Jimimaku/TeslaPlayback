@@ -1,4 +1,4 @@
-import { createControlledPromise } from "../../../components/ControlledPromise";
+import { createControlledPromise } from "../../ControlledPromise";
 
 export class AsyncLock {
   private last: Promise<void> = Promise.resolve();
@@ -11,3 +11,12 @@ export class AsyncLock {
     return last.then(() => p.resolve);
   };
 }
+
+export const useLock = <R>(lock: AsyncLock, fn: () => Promise<R>): Promise<R> =>
+  lock.acquire().then(async (release) => {
+    try {
+      return await fn();
+    } finally {
+      release();
+    }
+  });

@@ -3,7 +3,7 @@ import { clamp, juxt } from "ramda";
 import { FC, InputHTMLAttributes, PropsWithChildren, useCallback, useMemo, useRef } from "react";
 import { DragState, Position2D, usePointerHandler } from "../hooks/usePointerHandler";
 import { usePositionHandler } from "../hooks/usePositionHandler";
-import { ControlledPromise, createControlledPromise } from "./ControlledPromise";
+import { ControlledPromise, createControlledPromise } from "../utils/ControlledPromise";
 import { useSizeEntry } from "./useSizeEntry";
 
 export type ProgressBarProps = {
