@@ -13,4 +13,9 @@ test("export video", async ({ page }) => {
 
   await page.getByRole("button", { name: "Done" }).isEnabled();
   expect(page.locator("video[aria-label='Exported video']")).toHaveJSProperty("paused", false);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download" }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("2024-04-16_10-10-22.mp4");
 });

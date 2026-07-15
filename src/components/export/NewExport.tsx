@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { ExportConvertState } from ".";
 import { PlaybackEvent } from "../../common";
 import { EventHub } from "../../utils/EventHub";
-import { ConvertConfig, ConvertTrack, headerSize, loadConverter, Progress } from "../../utils/exportVideo/convert";
+import { ConvertConfig, ConvertTrack, headerSize, loadConverter, Progress, resolveExportStartTime } from "../../utils/exportVideo/convert";
 import { flowControlErrors } from "../../utils/exportVideo/mediabunny";
 import { $ } from "../../utils/general";
-import { formatDateTime } from "../../utils/time";
+import { formatDateTimeForFileName } from "../../utils/time";
 import { ExportDone } from "./ExportDone";
 import { ExportProcessing } from "./ExportProcessing";
 
@@ -21,6 +21,7 @@ type Props = {
 
 export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel, onFinish }: Props) {
   const [eventTime] = event;
+  const exportStartTime = resolveExportStartTime(convertTracks, convertConfig.trim);
   const [exportState, setExportState] = useState<ExportConvertState>({
     state: "loadingConverter",
   });
@@ -106,7 +107,7 @@ export function NewVideoExporter({ event, convertConfig, convertTracks, onCancel
           case "processing":
             return <ExportProcessing exportState={exportState} setExportState={setExportState} />;
           case "done":
-            return <ExportDone exportState={exportState} exportFileName={`${formatDateTime(eventTime)}.mp4`} onFinish={onFinish} />;
+            return <ExportDone exportState={exportState} exportFileName={`${formatDateTimeForFileName(exportStartTime)}.mp4`} onFinish={onFinish} />;
           case "fail":
             return (
               <Box>

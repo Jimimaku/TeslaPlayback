@@ -19,12 +19,22 @@ export function formatSecondsToHHMMSS(seconds: number) {
  * Format Date object to "YYYY-MM-DD HH:mm:ss" string.
  * If the date is invalid, return "Invalid Date".
  */
+const formatLocalDateTime = (dateTime: Date, dateTimeSeparator: string, timeSeparator: string) => {
+  if (Number.isNaN(dateTime.getTime())) throw new RangeError("Invalid Date");
+
+  const date = [dateTime.getFullYear(), dateTime.getMonth() + 1, dateTime.getDate()].map((part) => part.toString().padStart(2, "0"));
+  const time = [dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds()].map((part) => part.toString().padStart(2, "0"));
+  return `${date.join("-")}${dateTimeSeparator}${time.join(timeSeparator)}`;
+};
+
 export const formatDateTime = tryCatch(
-  (dateTime: Date) =>
-    dateTime
-      .toISOString()
-      .replace("T", " ")
-      .replace(/\.\d+Z$/, ""),
+  (dateTime: Date) => formatLocalDateTime(dateTime, " ", ":"),
+  () => "Invalid Date",
+);
+
+/** Format a local timestamp using separators that are safe in filenames. */
+export const formatDateTimeForFileName = tryCatch(
+  (dateTime: Date) => formatLocalDateTime(dateTime, "_", "-"),
   () => "Invalid Date",
 );
 

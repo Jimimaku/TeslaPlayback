@@ -49,6 +49,12 @@ export interface Convert {
   (tracks: ConvertTrack[], config: ConvertConfig, callbacks: ConvertCallbacks): CancelableJob<Blob>;
 }
 
+export function resolveExportStartTime(tracks: ConvertTrack[], trim?: ConvertConfig["trim"]): Date {
+  if (trim) return trim[0];
+  if (!tracks.length) throw new Error("Cannot resolve export start time without video tracks");
+  return tracks.reduce((earliest, track) => (track.startTime < earliest ? track.startTime : earliest), tracks[0].startTime);
+}
+
 export type Progress = number;
 
 export async function loadConverter(): Promise<Convert> {
