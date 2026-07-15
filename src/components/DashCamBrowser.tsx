@@ -4,7 +4,7 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { TeslaFS } from "../TeslaFS";
 import { PlaybackEvents } from "../common";
 import { useCurrentEvent } from "../hooks/useCurrentEvent";
-import { getSortedKeys } from "../utils/general";
+import { getDescendingSortedKeys } from "../utils/general";
 import { processDashCamFiles } from "../utils/teslaFileSystem/processDashCamFiles";
 import { EventPlayer } from "./EventPlayer";
 import { ParserLogViewer } from "./ParserLogViewer";
@@ -25,7 +25,7 @@ export const DashCamBrowser: FC<Props> = ({ loadFilesButton, fileList }) => {
   const categoryList = useMemo(() => TeslaFS.clipCategories.filter((scope) => !!Object.keys(categories[scope] || {}).length), [categories]);
   const [activeCategory, setActiveCategory] = useState<TeslaFS.ClipCategory>(TeslaFS.ClipCategory.Unknown);
   const activeEvents: PlaybackEvents = categories[activeCategory];
-  const activeEventsTimestamps = useMemo(() => getSortedKeys(activeEvents), [activeEvents]);
+  const activeEventsTimestamps = useMemo(() => getDescendingSortedKeys(activeEvents), [activeEvents]);
   useEffect(() => {
     const [firstAvailableCategory] = categoryList;
     setActiveCategory(firstAvailableCategory ?? TeslaFS.ClipCategory.Unknown);
